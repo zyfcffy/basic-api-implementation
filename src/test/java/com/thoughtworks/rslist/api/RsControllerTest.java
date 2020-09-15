@@ -118,5 +118,14 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[2].keyWord", is("无分类")));
     }
 
-
+    @Test
+    void should_delete_one_rs_event() throws Exception {
+        mockMvc.perform(delete("/rs/event?index=1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].eventName", is("第二条事件")))
+                .andExpect(jsonPath("$[0].keyWord", is("无分类")))
+                .andExpect(jsonPath("$[1].eventName", is("第三条事件")))
+                .andExpect(jsonPath("$[1].keyWord", is("无分类")));
+    }
 }

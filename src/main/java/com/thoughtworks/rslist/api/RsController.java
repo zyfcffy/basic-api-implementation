@@ -51,4 +51,10 @@ public class RsController {
     return rsList;
   }
 
+  @DeleteMapping("/rs/event")
+  private List<RsEvent> deleteEvent(@RequestParam(required = false) Integer index){
+    rsList.remove(index-1);
+    return rsList;
+  }
+
 }
