@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.RsEvent;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -25,4 +26,8 @@ public class RsController {
     return rsList;
   }
 
+  @GetMapping("/rs/{index}")
+  public RsEvent getOneRsEvent(@PathVariable int index){
+    return rsList.get(index-1);
+  }
 }

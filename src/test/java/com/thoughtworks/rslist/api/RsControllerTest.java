@@ -32,4 +32,23 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[2].keyWord",is("无分类")));
 
     }
+
+    @Test
+    void should_get_one_event() throws Exception {
+        mockMvc.perform(get("/rs/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.eventName",is("第一条事件")))
+                .andExpect(jsonPath("$.keyWord",is("无分类")));
+        mockMvc.perform(get("/rs/2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.eventName",is("第二条事件")))
+                .andExpect(jsonPath("$.keyWord",is("无分类")));
+        mockMvc.perform(get("/rs/3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.eventName",is("第三条事件")))
+                .andExpect(jsonPath("$.keyWord",is("无分类")));
+    }
+
+
+
 }
