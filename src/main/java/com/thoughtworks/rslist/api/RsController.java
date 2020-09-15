@@ -38,4 +38,15 @@ public class RsController {
     rsList.add(reEvent);
   }
 
+  @PutMapping("/rs/event")
+  public List<RsEvent> editOneRsEvent(@RequestBody RsEvent reEvent){
+    rsList.forEach(item->{
+      if(item.getEventName().equals("第一条事件")){
+        item.setEventName(reEvent.getEventName());
+        item.setKeyWord(reEvent.getKeyWord());
+      }
+    });
+    return rsList;
+  }
+
 }
