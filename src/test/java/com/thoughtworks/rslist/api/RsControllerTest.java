@@ -104,7 +104,7 @@ class RsControllerTest {
         RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济");
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(put("/rs/event")
+        mockMvc.perform(put("/rs/event?index=1")
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         mockMvc.perform(get("/rs/list"))
