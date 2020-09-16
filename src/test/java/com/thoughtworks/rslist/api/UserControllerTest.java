@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -26,11 +27,10 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        MvcResult mvcResult = mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
-        String index = mvcResult.getResponse().getHeader("index");
-        assertEquals(index,"2");
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index", "2"));
     }
 
     @Test

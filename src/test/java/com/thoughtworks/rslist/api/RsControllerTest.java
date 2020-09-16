@@ -16,8 +16,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -69,11 +68,10 @@ class RsControllerTest {
         RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济",user);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
-        MvcResult mvcResult = mockMvc.perform(post("/rs/event")
+        mockMvc.perform(post("/rs/event")
                 .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated()).andReturn();
-        String index = mvcResult.getResponse().getHeader("index");
-        assertEquals(index,"4");
+                .andExpect(status().isCreated())
+                .andExpect(header().string("index","4"));
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(4)))
@@ -154,7 +152,7 @@ class RsControllerTest {
         String json = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/event")
                 .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -165,7 +163,7 @@ class RsControllerTest {
         String json = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/event")
                 .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
         mockMvc.perform(get("/user/list"))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[1].userName", is("Mary")))
