@@ -23,6 +23,7 @@ public class User {
     @Size(max = 8)
     private String name;
     private String gender;
+    @NotNull
     private Integer age;
     private String email;
     private String phone;
