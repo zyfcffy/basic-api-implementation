@@ -22,12 +22,12 @@ public class UserController {
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity register(@Valid @RequestBody User user) {
+    public ResponseEntity<Object> register(@Valid @RequestBody User user) {
         userList.add(user);
         return ResponseEntity.created(null).header("index",String.valueOf(userList.size())).build();
     }
 
-    @GetMapping("/user/list")
+    @GetMapping("/user/users")
     public ResponseEntity<List<User>> getUserList(){
         return ResponseEntity.ok(userList);
     }

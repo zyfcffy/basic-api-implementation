@@ -24,7 +24,6 @@ public class RsEvent {
     private String keyWord;
 
     @Valid
-    //@JsonIgnore
     private User user;
 
     public RsEvent(String eventName, String keyWord, User user) {

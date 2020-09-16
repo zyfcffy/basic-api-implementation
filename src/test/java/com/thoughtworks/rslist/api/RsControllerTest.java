@@ -164,16 +164,16 @@ class RsControllerTest {
         mockMvc.perform(post("/rs/event")
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        mockMvc.perform(get("/user/list"))
+        mockMvc.perform(get("/user/users"))
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[1].userName", is("Mary")))
-                .andExpect(jsonPath("$[1].gender", is("female")));
+                .andExpect(jsonPath("$[1].user_name", is("Mary")))
+                .andExpect(jsonPath("$[1].user_gender", is("female")));
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[3].eventName", is("猪肉涨价了")))
                 .andExpect(jsonPath("$[3].keyWord", is("经济")))
-                .andExpect(jsonPath("$[3].user.userName", is("Mary")))
-                .andExpect(jsonPath("$[3].user.gender", is("female")));
+                .andExpect(jsonPath("$[3].user.user_name", is("Mary")))
+                .andExpect(jsonPath("$[3].user.user_gender", is("female")));
     }
 }
