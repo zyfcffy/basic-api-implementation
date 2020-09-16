@@ -3,17 +3,14 @@ package com.thoughtworks.rslist.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Data
 @NoArgsConstructor
 public class User {
 
-    public User(String name, String gender, Integer age, String email, String phone) {
-        this.name = name;
+    public User(String userName, String gender, Integer age, String email, String phone) {
+        this.userName = userName;
         this.gender = gender;
         this.age = age;
         this.email = email;
@@ -22,10 +19,11 @@ public class User {
 
     @NotEmpty
     @Size(max = 8)
-    private String name;
+    private String userName;
     private String gender;
     @NotNull
     @Max(100)
+    @Min(18)
     private Integer age;
     private String email;
     private String phone;
