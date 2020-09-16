@@ -43,11 +43,12 @@ public class RsController {
     }
 
     @PostMapping("/rs/event")
-    public ResponseEntity addRsEvent(@Valid @RequestBody RsEvent reEvent) {
-        if (!userList.contains(reEvent.getUser())) {
-            userList.add(reEvent.getUser());
+    public ResponseEntity addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
+        if (!userList.contains(rsEvent.getUser())) {
+            userList.add(rsEvent.getUser());
         }
-        return ResponseEntity.ok(rsList.add(reEvent));
+        rsList.add(rsEvent);
+        return ResponseEntity.created(null).header("index",String.valueOf(rsList.size())).build();
     }
 
     @PutMapping("/rs/event/{index}")
