@@ -20,6 +20,16 @@ class UserControllerTest {
     MockMvc mockMvc;
 
     @Test
+    void user_is_ok() throws Exception {
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/user/register")
+                .content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void user_name_should_not_empty() throws Exception {
         User user = new User("", "female", 20, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();

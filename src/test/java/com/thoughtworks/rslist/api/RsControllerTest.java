@@ -141,4 +141,37 @@ class RsControllerTest {
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void user_exist_when_add_rs_event() throws Exception {
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void user_not_exist_when_add_rs_event() throws Exception {
+        User user = new User("Mary", "female", 20, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/user/list"))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[1].userName", is("Mary")))
+                .andExpect(jsonPath("$[1].gender", is("female")));
+        mockMvc.perform(get("/rs/list"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$[3].eventName", is("猪肉涨价了")))
+                .andExpect(jsonPath("$[3].keyWord", is("经济")))
+                .andExpect(jsonPath("$[3].user.userName", is("Mary")))
+                .andExpect(jsonPath("$[3].user.gender", is("female")));
+    }
 }
