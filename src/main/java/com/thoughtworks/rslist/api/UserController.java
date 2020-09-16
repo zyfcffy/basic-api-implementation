@@ -11,10 +11,16 @@ import java.util.List;
 
 @RestController
 public class UserController {
-    private List<User> userList = new ArrayList<>();
+    private List<User> userList = initUserList();
+
+    private List<User> initUserList() {
+        List<User> temptUserList = new ArrayList<>();
+        temptUserList.add(new User("xiaowang","female",19,"a@thoughtworks.com","18888888888"));
+        return temptUserList;
+    }
 
     @PostMapping("/user/register")
-    public void register(@Valid @RequestBody User user){
+    public void register(@Valid @RequestBody User user) {
         userList.add(user);
     }
 }

@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
+import com.thoughtworks.rslist.dto.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -62,7 +63,8 @@ class RsControllerTest {
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
-        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济");
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济",user);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(post("/rs/event")
@@ -81,7 +83,8 @@ class RsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
                 .andExpect(jsonPath("$[0].keyWord", is("无分类")));
-        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济");
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济",user);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(rsEvent);
         mockMvc.perform(put("/rs/event/1")
@@ -104,5 +107,16 @@ class RsControllerTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("第二条事件")))
                 .andExpect(jsonPath("$[0].keyWord", is("无分类")));
+    }
+
+    @Test
+    void add_event_user_should_be_valid() throws Exception {
+        User user = new User("", "female", 1, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济",user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
