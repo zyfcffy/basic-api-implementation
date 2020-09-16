@@ -2,7 +2,7 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,29 +29,29 @@ public class RsController {
 
 
     @GetMapping("/rs/list")
-    public List<RsEvent> getAllRsEvent(@RequestParam(required = false) Integer start,
-                                       @RequestParam(required = false) Integer end) {
+    public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
+                                                       @RequestParam(required = false) Integer end) {
         if (start == null || end == null) {
-            return rsList;
+            return ResponseEntity.ok(rsList);
         }
-        return rsList.subList(start - 1, end);
+        return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
 
     @GetMapping("/rs/{index}")
-    public RsEvent getOneRsEvent(@PathVariable int index) {
-        return rsList.get(index - 1);
+    public ResponseEntity<RsEvent> getOneRsEvent(@PathVariable int index) {
+        return ResponseEntity.ok(rsList.get(index - 1));
     }
 
     @PostMapping("/rs/event")
-    public void addRsEvent(@Valid @RequestBody RsEvent reEvent) {
+    public ResponseEntity addRsEvent(@Valid @RequestBody RsEvent reEvent) {
         if (!userList.contains(reEvent.getUser())) {
             userList.add(reEvent.getUser());
         }
-        rsList.add(reEvent);
+        return ResponseEntity.ok(rsList.add(reEvent));
     }
 
     @PutMapping("/rs/event/{index}")
-    public List<RsEvent> editOneRsEvent(@PathVariable Integer index,
+    public ResponseEntity<List<RsEvent>> editOneRsEvent(@PathVariable Integer index,
                                         @RequestBody RsEvent reEvent) {
         RsEvent editRsEvent = rsList.get(index - 1);
         if (reEvent.getEventName() != null) {
@@ -60,12 +60,12 @@ public class RsController {
         if (reEvent.getKeyWord() != null) {
             editRsEvent.setKeyWord(reEvent.getKeyWord());
         }
-        return rsList;
+        return ResponseEntity.ok(rsList);
     }
 
     @DeleteMapping("/rs/event/{index}")
-    private List<RsEvent> deleteEvent(@PathVariable Integer index) {
+    private ResponseEntity<List<RsEvent>> deleteEvent(@PathVariable Integer index) {
         rsList.remove(index - 1);
-        return rsList;
+        return ResponseEntity.ok(rsList);
     }
 }
