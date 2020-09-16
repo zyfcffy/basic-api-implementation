@@ -130,4 +130,15 @@ class RsControllerTest {
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void event_key_word_should_not_empty() throws Exception {
+        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+        RsEvent rsEvent = new RsEvent("猪肉涨价了", "", user);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 }
