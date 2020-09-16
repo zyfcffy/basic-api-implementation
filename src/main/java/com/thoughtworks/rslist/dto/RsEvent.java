@@ -5,11 +5,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class RsEvent {
+    @NotEmpty
     private String eventName;
 
     private String keyWord;
