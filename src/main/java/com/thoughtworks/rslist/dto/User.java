@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.bytebuddy.implementation.bind.annotation.Empty;
 
 import javax.validation.constraints.*;
 
@@ -25,6 +26,7 @@ public class User {
     @Max(100)
     @Min(18)
     private Integer age;
+    @Email
     private String email;
     private String phone;
 }

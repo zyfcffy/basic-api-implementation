@@ -41,7 +41,7 @@ class UserControllerTest {
 
     @Test
     void user_age_should_not_empty() throws Exception {
-        User user = new User("Mary", "female", null, "a@twu.com", "15525557689");
+        User user = new User("xiaowang", "female", null, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
@@ -51,7 +51,7 @@ class UserControllerTest {
 
     @Test
     void user_age_should_under_100() throws Exception {
-        User user = new User("Mary", "female", 101, "a@twu.com", "15525557689");
+        User user = new User("xiaowang", "female", 101, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
@@ -61,7 +61,17 @@ class UserControllerTest {
 
     @Test
     void user_age_should_above_18() throws Exception {
-        User user = new User("Mary", "female", 1, "a@twu.com", "15525557689");
+        User user = new User("xiaowang", "female", 1, "a@twu.com", "15525557689");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/user/register")
+                .content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void user_email_should_be_valid() throws Exception {
+        User user = new User("xiaowang", "female", 20, "1", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
