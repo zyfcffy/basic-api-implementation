@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -13,9 +14,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class RsEvent {
     public interface CommonView {};
     public interface IgnoreUser extends CommonView {};
@@ -31,6 +33,26 @@ public class RsEvent {
     @NotNull
     private int userId;
 
+    @NotNull
+    @Valid
+    private User user;
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public String getKeyWord() {
+        return keyWord;
+    }
+
+    public void setKeyWord(String keyWord) {
+        this.keyWord = keyWord;
+    }
+
     @JsonIgnore
     public int getUserId() {
         return userId;
@@ -41,6 +63,12 @@ public class RsEvent {
         this.userId = userId;
     }
 
-//    @Valid
-//    private User user;
+    @JsonProperty
+    public User getUser() {
+        return user;
+    }
+    @JsonIgnore
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

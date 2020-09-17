@@ -10,11 +10,11 @@ public class ExceptionHandler {
     public static Logger logger = LoggerFactory.getLogger(ExceptionHandler.class);
 
     @org.springframework.web.bind.annotation.ExceptionHandler({IndexOutOfBoundsException.class,
-            InvalidIndexException.class})
+            InvalidIndexException.class,RequestNotValidException.class})
     public ResponseEntity<CommentError> handleIndexOutOfBoundsException(Exception ex) {
         CommentError commentError = new CommentError();
         commentError.setError(ex.getMessage());
         logger.error("invalid request param");
-        return ResponseEntity.status(400).body(commentError);
+        return ResponseEntity.badRequest().body(commentError);
     }
 }

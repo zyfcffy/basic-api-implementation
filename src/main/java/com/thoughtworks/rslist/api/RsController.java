@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.User;
 import com.thoughtworks.rslist.entity.RsEventEntity;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.CommentError;
 import com.thoughtworks.rslist.exceptions.InvalidIndexException;
 import com.thoughtworks.rslist.exceptions.InvalidRsEventException;
+import com.thoughtworks.rslist.exceptions.RequestNotValidException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.thoughtworks.rslist.api.UserController.userList;
 
@@ -58,14 +61,14 @@ public class RsController {
         return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
 
-    @JsonView(RsEvent.CommonView.class)
-    @GetMapping("/rs/{index}")
-    public ResponseEntity<RsEvent> getOneRsEvent(@PathVariable int index) throws InvalidIndexException {
-        if (index > rsList.size() || index < 1) {
-            throw new InvalidIndexException("invalid index");
-        }
-        return ResponseEntity.ok(rsList.get(index - 1));
-    }
+//    @JsonView(RsEvent.CommonView.class)
+//    @GetMapping("/rs/{index}")
+//    public ResponseEntity<RsEvent> getOneRsEvent(@PathVariable int index) throws InvalidIndexException {
+//        if (index > rsList.size() || index < 1) {
+//            throw new InvalidIndexException("invalid index");
+//        }
+//        return ResponseEntity.ok(rsList.get(index - 1));
+//    }
 
     @PostMapping("/rs/event")
     public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent, BindingResult bindingResult) throws InvalidRsEventException {
@@ -78,10 +81,32 @@ public class RsController {
         RsEventEntity rsEventEntity = RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
                 .keyWord(rsEvent.getKeyWord())
-                .userId(rsEvent.getUserId())
+                .user(UserEntity.builder()
+                        .id(rsEvent.getUserId())
+                        .build())
                 .build();
         rsEventRepository.save(rsEventEntity);
         return ResponseEntity.created(null).build();
+    }
+
+    @GetMapping("rs/{id}")
+    public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer id) throws RequestNotValidException {
+        Optional<RsEventEntity> result = rsEventRepository.findById(id);
+        if(!result.isPresent()){
+            throw new RequestNotValidException("invalid id");
+        }
+        RsEventEntity rsEvent = result.get();
+        UserEntity userEntity = rsEvent.getUser();
+        return ResponseEntity.ok(RsEvent.builder()
+        .eventName(rsEvent.getEventName())
+        .keyWord(rsEvent.getKeyWord())
+        .user(new User(
+                userEntity.getUserName(),
+                userEntity.getGender(),
+                userEntity.getAge(),
+                userEntity.getEmail(),
+                userEntity.getPhone()))
+        .build());
     }
 
     @PutMapping("/rs/event/{index}")
