@@ -35,13 +35,16 @@ public class RsController {
         if (start == null || end == null) {
             return ResponseEntity.ok(rsList);
         }
+        if(start<0||start>rsList.size()||end<start||end>rsList.size()){
+            throw new IndexOutOfBoundsException("invalid request param");
+        }
         return ResponseEntity.ok(rsList.subList(start - 1, end));
     }
 
     @GetMapping("/rs/{index}")
     public ResponseEntity<RsEvent> getOneRsEvent(@PathVariable int index) throws InvalidIndexException {
         if(index > rsList.size() || index < 1){
-            throw new InvalidIndexException();
+            throw new InvalidIndexException("invalid index");
         }
         return ResponseEntity.ok(rsList.get(index - 1));
     }

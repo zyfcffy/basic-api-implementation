@@ -36,7 +36,6 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[1].keyWord", is("无分类")))
                 .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
                 .andExpect(jsonPath("$[2].keyWord", is("无分类")));
-
     }
 
     @Test
@@ -175,5 +174,12 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[3].keyWord", is("经济")))
                 .andExpect(jsonPath("$[3].user.user_name", is("Mary")))
                 .andExpect(jsonPath("$[3].user.user_gender", is("female")));
+    }
+
+    @Test
+    void should_return_400_and_error_message_when_IndexOutOfBoundsException() throws Exception {
+        mockMvc.perform(get("/rs/40"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error",is("invalid index")));
     }
 }

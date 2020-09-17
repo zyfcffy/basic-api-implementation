@@ -13,14 +13,8 @@ public class ExceptionHandler {
             InvalidIndexException.class})
     public ResponseEntity<CommentError> handleIndexOutOfBoundsException(Exception ex) {
         CommentError commentError = new CommentError();
-        if (ex instanceof IndexOutOfBoundsException) {
-            commentError.setError("invalid request param");
-            logger.error("invalid request param");
-        }
-        if (ex instanceof InvalidIndexException) {
-            commentError.setError("invalid index");
-            logger.error("invalid index");
-        }
+        commentError.setError(ex.getMessage());
+        logger.error("invalid request param");
         return ResponseEntity.status(400).body(commentError);
     }
 }
