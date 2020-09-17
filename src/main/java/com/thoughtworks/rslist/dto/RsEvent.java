@@ -13,17 +13,19 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class RsEvent {
-    public interface IgnoreUser {};
+    public interface CommonView {};
+    public interface IgnoreUser extends CommonView {};
 
     @NotEmpty
-    @JsonView(IgnoreUser.class)
+    @JsonView(CommonView.class)
     private String eventName;
 
     @NotEmpty
-    @JsonView(IgnoreUser.class)
+    @JsonView(CommonView.class)
     private String keyWord;
 
     @Valid
+    @JsonView(IgnoreUser.class)
     private User user;
 
     public RsEvent(String eventName, String keyWord, User user) {
