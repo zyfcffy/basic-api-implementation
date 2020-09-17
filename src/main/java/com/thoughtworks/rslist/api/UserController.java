@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -19,8 +20,8 @@ public class UserController {
 
     public final UserRepository userRepository;
 
-    public UserController(UserRepository userRepository){
-        this.userRepository=userRepository;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public static List<User> initUserList() {
@@ -31,7 +32,7 @@ public class UserController {
 
     @PostMapping("/user/register")
     public ResponseEntity<Object> register(@Valid @RequestBody User user, BindingResult bindingResult) throws InvalidUserException {
-        if (bindingResult.getAllErrors().size() != 0){
+        if (bindingResult.getAllErrors().size() != 0) {
             throw new InvalidUserException("invalid user");
         }
         UserEntity userEntity = UserEntity.builder()
@@ -42,7 +43,7 @@ public class UserController {
                 .phone(user.getPhone())
                 .build();
         userRepository.save(userEntity);
-            userList.add(user);
+        userList.add(user);
         return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
     }
 
@@ -51,8 +52,14 @@ public class UserController {
         return ResponseEntity.ok(userList);
     }
 
+    @GetMapping("user/{id}")
+    public ResponseEntity<UserEntity> getUserById(@PathVariable Integer id){
+        Optional<UserEntity> userOptional = userRepository.findById(id);
+        return ResponseEntity.ok(userOptional.get());
+    }
+
     @ExceptionHandler(InvalidUserException.class)
-    public ResponseEntity<CommentError> handleInvalidUserException(Exception ex){
+    public ResponseEntity<CommentError> handleInvalidUserException(Exception ex) {
         CommentError commentError = new CommentError();
         commentError.setError(ex.getMessage());
         return ResponseEntity.badRequest().body(commentError);

@@ -35,7 +35,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-
+        userRepository.deleteAll();
     }
 
     @Test
@@ -152,5 +152,24 @@ class UserControllerTest {
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
+    }
+
+    @Test
+    void should_git_user_by_id() throws Exception {
+        UserEntity userEntity = UserEntity.builder()
+                .userName("user01")
+                .age(19)
+                .email("12@a.com")
+                .gender("male")
+                .phone("15527765431")
+                .build();
+        userRepository.save(userEntity);
+        mockMvc.perform(get("/user/{id}",userEntity.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id",is(1)))
+                .andExpect(jsonPath("$.userName",is("user01")))
+                .andExpect(jsonPath("$.age",is(19)))
+                .andExpect(jsonPath("$.gender",is("male")))
+                .andExpect(jsonPath("$.phone",is("15527765431")));
     }
 }
