@@ -49,6 +49,10 @@ class UserControllerTest {
         List<UserEntity> users = userRepository.findAll();
         assertEquals(1, users.size());
         assertEquals("xiaowang", users.get(0).getUserName());
+        assertEquals("female", users.get(0).getGender());
+        assertEquals(19, users.get(0).getAge());
+        assertEquals("a@thoughtworks.com", users.get(0).getEmail());
+        assertEquals("18888888888", users.get(0).getPhone());
     }
 
     @Test
