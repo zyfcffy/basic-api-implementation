@@ -45,7 +45,7 @@ public class RsController {
     }
 
     @PostMapping("/rs/event")
-    public ResponseEntity addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
+    public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
         if (!userList.contains(rsEvent.getUser())) {
             userList.add(rsEvent.getUser());
         }

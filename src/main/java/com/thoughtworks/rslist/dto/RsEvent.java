@@ -25,7 +25,6 @@ public class RsEvent {
     private String keyWord;
 
     @Valid
-    @JsonView(IgnoreUser.class)
     private User user;
 
     public RsEvent(String eventName, String keyWord, User user) {
