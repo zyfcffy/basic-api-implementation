@@ -228,4 +228,14 @@ class RsControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error",is("invalid param")));
     }
+
+    @Test
+    void should_add_rs_event_when_user_not_exit() throws Exception {
+        String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":1}";
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
+        assertEquals(0,rsEvents.size());
+    }
 }

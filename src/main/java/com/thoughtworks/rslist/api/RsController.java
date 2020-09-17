@@ -72,6 +72,9 @@ public class RsController {
         if (bindingResult.getAllErrors().size() != 0) {
             throw new InvalidRsEventException("invalid param");
         }
+        if(!userRepository.existsById(rsEvent.getUserId())){
+            return ResponseEntity.badRequest().build();
+        }
         RsEventEntity rsEventEntity = RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
                 .keyWord(rsEvent.getKeyWord())
