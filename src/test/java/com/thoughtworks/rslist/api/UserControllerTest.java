@@ -126,4 +126,15 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].user_email", is("a@thoughtworks.com")))
                 .andExpect(jsonPath("$[0].user_phone", is("18888888888")));
     }
+
+    @Test
+    void should_return_400_and_error_message_when_InvalidUserException() throws Exception {
+        User user = new User("", "female", 20, "a@twu.com", "15525557689");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/user/register")
+                .content(userJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
+    }
 }
