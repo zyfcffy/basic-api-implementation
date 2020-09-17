@@ -18,8 +18,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -49,7 +48,7 @@ class UserControllerTest {
                 .andExpect(header().string("index", "2"));
         List<UserEntity> users = userRepository.findAll();
         assertEquals(1, users.size());
-        assertEquals("xiaowang",users.get(0).getUserName());
+        assertEquals("xiaowang", users.get(0).getUserName());
     }
 
     @Test
@@ -155,7 +154,7 @@ class UserControllerTest {
     }
 
     @Test
-    void should_git_user_by_id() throws Exception {
+    void should_get_user_by_id() throws Exception {
         UserEntity userEntity = UserEntity.builder()
                 .userName("user01")
                 .age(19)
@@ -164,12 +163,28 @@ class UserControllerTest {
                 .phone("15527765431")
                 .build();
         userRepository.save(userEntity);
-        mockMvc.perform(get("/user/{id}",userEntity.getId()))
+        mockMvc.perform(get("/user/{id}", userEntity.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id",is(1)))
-                .andExpect(jsonPath("$.userName",is("user01")))
-                .andExpect(jsonPath("$.age",is(19)))
-                .andExpect(jsonPath("$.gender",is("male")))
-                .andExpect(jsonPath("$.phone",is("15527765431")));
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.userName", is("user01")))
+                .andExpect(jsonPath("$.age", is(19)))
+                .andExpect(jsonPath("$.gender", is("male")))
+                .andExpect(jsonPath("$.phone", is("15527765431")));
+    }
+
+    @Test
+    void should_delete_user_by_id() throws Exception {
+        UserEntity userEntity = UserEntity.builder()
+                .userName("user01")
+                .age(19)
+                .email("12@a.com")
+                .gender("male")
+                .phone("15527765431")
+                .build();
+        userRepository.save(userEntity);
+        mockMvc.perform(delete("/user/{id}", userEntity.getId()))
+                .andExpect(status().isOk());
+        List<UserEntity> userEntities = userRepository.findAll();
+        assertEquals(0,userEntities.size());
     }
 }

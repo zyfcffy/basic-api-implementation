@@ -58,6 +58,12 @@ public class UserController {
         return ResponseEntity.ok(userOptional.get());
     }
 
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Object> deleteUserById(@PathVariable Integer id){
+        userRepository.deleteById(id);
+        return ResponseEntity.status(200).build();
+    }
+
     @ExceptionHandler(InvalidUserException.class)
     public ResponseEntity<CommentError> handleInvalidUserException(Exception ex) {
         CommentError commentError = new CommentError();
