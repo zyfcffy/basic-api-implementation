@@ -3,9 +3,13 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.User;
+import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.exceptions.CommentError;
 import com.thoughtworks.rslist.exceptions.InvalidIndexException;
 import com.thoughtworks.rslist.exceptions.InvalidRsEventException;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +25,24 @@ import static com.thoughtworks.rslist.api.UserController.userList;
 
 @RestController
 public class RsController {
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
+
+    public RsController(UserRepository userRepository, RsEventRepository rsEventRepository) {
+        this.rsEventRepository = rsEventRepository;
+        this.userRepository = userRepository;
+    }
+
+
     private List<RsEvent> rsList = initRsList();
 
     private List<RsEvent> initRsList() {
-        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-        List<RsEvent> tempRsList = new ArrayList<>();
-        tempRsList.add(new RsEvent("第一条事件", "无分类", user));
-        tempRsList.add(new RsEvent("第二条事件", "无分类", user));
-        tempRsList.add(new RsEvent("第三条事件", "无分类", user));
-        return tempRsList;
+//        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
+//        List<RsEvent> tempRsList = new ArrayList<>();
+//        tempRsList.add(new RsEvent("第一条事件", "无分类", user));
+//        tempRsList.add(new RsEvent("第二条事件", "无分类", user));
+//        tempRsList.add(new RsEvent("第三条事件", "无分类", user));
+        return new ArrayList<>();
     }
 
     @JsonView(RsEvent.CommonView.class)
@@ -59,11 +72,13 @@ public class RsController {
         if (bindingResult.getAllErrors().size() != 0) {
             throw new InvalidRsEventException("invalid param");
         }
-        if (!userList.contains(rsEvent.getUser())) {
-            userList.add(rsEvent.getUser());
-        }
-        rsList.add(rsEvent);
-        return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
+        RsEventEntity rsEventEntity = RsEventEntity.builder()
+                .eventName(rsEvent.getEventName())
+                .keyWord(rsEvent.getKeyWord())
+                .userId(rsEvent.getUserId())
+                .build();
+        rsEventRepository.save(rsEventEntity);
+        return ResponseEntity.created(null).build();
     }
 
     @PutMapping("/rs/event/{index}")
