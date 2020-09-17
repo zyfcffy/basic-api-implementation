@@ -2,8 +2,11 @@ package com.thoughtworks.rslist.api;
 
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.User;
+import com.thoughtworks.rslist.exceptions.CommentError;
 import com.thoughtworks.rslist.exceptions.InvalidIndexException;
+import com.thoughtworks.rslist.exceptions.InvalidRsEventException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +38,7 @@ public class RsController {
         if (start == null || end == null) {
             return ResponseEntity.ok(rsList);
         }
-        if(start<0||start>rsList.size()||end<start||end>rsList.size()){
+        if (start < 0 || start > rsList.size() || end < start || end > rsList.size()) {
             throw new IndexOutOfBoundsException("invalid request param");
         }
         return ResponseEntity.ok(rsList.subList(start - 1, end));
@@ -43,24 +46,27 @@ public class RsController {
 
     @GetMapping("/rs/{index}")
     public ResponseEntity<RsEvent> getOneRsEvent(@PathVariable int index) throws InvalidIndexException {
-        if(index > rsList.size() || index < 1){
+        if (index > rsList.size() || index < 1) {
             throw new InvalidIndexException("invalid index");
         }
         return ResponseEntity.ok(rsList.get(index - 1));
     }
 
     @PostMapping("/rs/event")
-    public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
+    public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent, BindingResult bindingResult) throws InvalidRsEventException {
+        if (bindingResult.getAllErrors().size() != 0) {
+            throw new InvalidRsEventException("invalid param");
+        }
         if (!userList.contains(rsEvent.getUser())) {
             userList.add(rsEvent.getUser());
         }
         rsList.add(rsEvent);
-        return ResponseEntity.created(null).header("index",String.valueOf(rsList.size())).build();
+        return ResponseEntity.created(null).header("index", String.valueOf(rsList.size())).build();
     }
 
     @PutMapping("/rs/event/{index}")
     public ResponseEntity<List<RsEvent>> editOneRsEvent(@PathVariable Integer index,
-                                        @RequestBody RsEvent reEvent) {
+                                                        @RequestBody RsEvent reEvent) {
         RsEvent editRsEvent = rsList.get(index - 1);
         if (reEvent.getEventName() != null) {
             editRsEvent.setEventName(reEvent.getEventName());
@@ -75,5 +81,12 @@ public class RsController {
     private ResponseEntity<List<RsEvent>> deleteEvent(@PathVariable Integer index) {
         rsList.remove(index - 1);
         return ResponseEntity.ok(rsList);
+    }
+
+    @ExceptionHandler(InvalidRsEventException.class)
+    public ResponseEntity<CommentError> handleInvalidRsEventException(Exception ex) {
+        CommentError commentError = new CommentError();
+        commentError.setError(ex.getMessage());
+        return ResponseEntity.badRequest().body(commentError);
     }
 }
