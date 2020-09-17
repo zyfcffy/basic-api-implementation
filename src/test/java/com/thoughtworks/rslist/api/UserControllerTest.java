@@ -1,8 +1,11 @@
 package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.User;
+import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,8 +35,12 @@ class UserControllerTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    RsEventRepository rsEventRepository;
+
     @BeforeEach
     void setUp() {
+        rsEventRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -184,11 +191,37 @@ class UserControllerTest {
                 .email("12@a.com")
                 .gender("male")
                 .phone("15527765431")
+                .voteNum(10)
                 .build();
         userRepository.save(userEntity);
         mockMvc.perform(delete("/user/{id}", userEntity.getId()))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
         List<UserEntity> userEntities = userRepository.findAll();
         assertEquals(0,userEntities.size());
+    }
+
+    @Test
+    void should_delete_user() throws Exception {
+        UserEntity userEntity = UserEntity.builder()
+                .userName("user01")
+                .age(19)
+                .email("12@a.com")
+                .gender("male")
+                .phone("15527765431")
+                .voteNum(10)
+                .build();
+        userRepository.save(userEntity);
+        RsEventEntity rsEventEntity = RsEventEntity.builder()
+                .eventName("eventName01")
+                .keyWord("keyWord")
+                .userId(userEntity.getId())
+                .build();
+        rsEventRepository.save(rsEventEntity);
+        mockMvc.perform(delete("/user/{id}",userEntity.getId()))
+                .andExpect(status().isNoContent());
+        List<UserEntity> userEntities = userRepository.findAll();
+        List<RsEventEntity> rsEventEntities = rsEventRepository.findAll();
+        assertEquals(0,userEntities.size());
+        assertEquals(0,rsEventEntities.size());
     }
 }

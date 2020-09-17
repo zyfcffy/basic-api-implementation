@@ -4,7 +4,9 @@ import com.thoughtworks.rslist.dto.User;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.CommentError;
 import com.thoughtworks.rslist.exceptions.InvalidUserException;
+import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +20,13 @@ import java.util.Optional;
 public class UserController {
     public static List<User> userList = initUserList();
 
-    public final UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
 
-    public UserController(UserRepository userRepository) {
+
+    public UserController(UserRepository userRepository, RsEventRepository rsEventRepository) {
         this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
     }
 
     public static List<User> initUserList() {
@@ -53,15 +58,15 @@ public class UserController {
     }
 
     @GetMapping("user/{id}")
-    public ResponseEntity<UserEntity> getUserById(@PathVariable Integer id){
+    public ResponseEntity<UserEntity> getUserById(@PathVariable Integer id) {
         Optional<UserEntity> userOptional = userRepository.findById(id);
         return ResponseEntity.ok(userOptional.get());
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<Object> deleteUserById(@PathVariable Integer id){
+    public ResponseEntity<Object> deleteUserById(@PathVariable Integer id) {
         userRepository.deleteById(id);
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(InvalidUserException.class)

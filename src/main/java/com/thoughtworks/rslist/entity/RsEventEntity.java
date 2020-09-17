@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "re_event")
+@Table(name = "rs_event")
 public class RsEventEntity {
 
     @Id
