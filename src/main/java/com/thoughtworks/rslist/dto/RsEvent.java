@@ -33,7 +33,6 @@ public class RsEvent {
     @NotNull
     private int userId;
 
-    @NotNull
     @Valid
     private User user;
 

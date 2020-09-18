@@ -120,22 +120,32 @@ class RsControllerTest {
     }
 
     @Test
-    void should_edit_one_rs_event() throws Exception {
-        mockMvc.perform(get("/rs/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-                .andExpect(jsonPath("$[0].keyWord", is("无分类")));
-        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济",0, user);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(rsEvent);
-        mockMvc.perform(put("/rs/event/1")
-                .content(json).contentType(MediaType.APPLICATION_JSON))
+    void should_edit_one_rs_event_when_userId_equals_reEvent_userId() throws Exception {
+        UserEntity userEntity = UserEntity.builder()
+                .userName("user01")
+                .age(19)
+                .email("12@a.com")
+                .gender("male")
+                .phone("15527765431")
+                .voteNum(10)
+                .build();
+        userRepository.save(userEntity);
+        RsEventEntity rsEventEntity = RsEventEntity.builder()
+                .eventName("eventName01")
+                .keyWord("keyWord")
+                .user(userEntity)
+                .build();
+        rsEventRepository.save(rsEventEntity);
+        mockMvc.perform(get("/rs/{id}",rsEventEntity.getId()))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/list"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].eventName", is("猪肉涨价了")))
-                .andExpect(jsonPath("$[0].keyWord", is("经济")));
+        String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":"+userEntity.getId()+"}";
+        mockMvc.perform(put("/rs/event/{rsEventId}",rsEventEntity.getId())
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
+        assertEquals("猪肉涨价了",rsEvents.get(0).getEventName());
+        assertEquals(userEntity.getId(),rsEvents.get(0).getUser().getId());
+
     }
 
     @Test
