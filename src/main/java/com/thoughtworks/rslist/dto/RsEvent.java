@@ -5,22 +5,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class RsEvent {
-    public interface CommonView {};
-    public interface IgnoreUser extends CommonView {};
+    public interface CommonView { };
+
+    public interface IgnoreUser extends CommonView { };
 
     @NotEmpty
     @JsonView(CommonView.class)
@@ -70,6 +68,7 @@ public class RsEvent {
     public User getUser() {
         return user;
     }
+
     @JsonIgnore
     public void setUser(User user) {
         this.user = user;

@@ -73,19 +73,6 @@ public class RsController {
                         .collect(Collectors.toList()).subList(start - 1, end));
     }
 
-    @PostMapping("/rs/event")
-    public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
-        RsEventEntity rsEventEntity = RsEventEntity.builder()
-                .eventName(rsEvent.getEventName())
-                .keyWord(rsEvent.getKeyWord())
-                .userEntity(UserEntity.builder()
-                        .id(rsEvent.getUserId())
-                        .build())
-                .build();
-        rsEventRepository.save(rsEventEntity);
-        return ResponseEntity.created(null).build();
-    }
-
     @GetMapping("rs/{id}")
     public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer id) throws RequestNotValidException {
         Optional<RsEventEntity> result = rsEventRepository.findById(id);
@@ -106,6 +93,19 @@ public class RsController {
                 .voteNum(rsEvent.getVoteNum())
                 .userId(rsEvent.getUserEntity().getId())
                 .build());
+    }
+
+    @PostMapping("/rs/event")
+    public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
+        RsEventEntity rsEventEntity = RsEventEntity.builder()
+                .eventName(rsEvent.getEventName())
+                .keyWord(rsEvent.getKeyWord())
+                .userEntity(UserEntity.builder()
+                        .id(rsEvent.getUserId())
+                        .build())
+                .build();
+        rsEventRepository.save(rsEventEntity);
+        return ResponseEntity.created(null).build();
     }
 
     @PutMapping("/rs/event/{rsEventId}")
