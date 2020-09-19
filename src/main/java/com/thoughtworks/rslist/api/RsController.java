@@ -45,9 +45,10 @@ public class RsController {
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
                                                        @RequestParam(required = false) Integer end) {
+        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
         if (start == null || end == null) {
             return ResponseEntity.ok(
-                    rsEventRepository.findAll().stream()
+                    rsEvents.stream()
                             .map(item ->
                                     RsEvent.builder()
                                             .eventName(item.getEventName())
@@ -57,10 +58,19 @@ public class RsController {
                                             .build())
                             .collect(Collectors.toList()));
         }
-        if (start < 0 || start > rsList.size() || end < start || end > rsList.size()) {
+        if (start < 0 || start > rsEvents.size() || end < start || end > rsEvents.size()) {
             throw new IndexOutOfBoundsException("invalid request param");
         }
-        return ResponseEntity.ok(rsList.subList(start - 1, end));
+        return ResponseEntity.ok(
+                rsEvents.stream()
+                        .map(item ->
+                                RsEvent.builder()
+                                        .eventName(item.getEventName())
+                                        .keyWord(item.getKeyWord())
+                                        .voteNum(item.getVoteNum())
+                                        .userId(item.getUserEntity().getId())
+                                        .build())
+                        .collect(Collectors.toList()).subList(start - 1, end));
     }
 
     @PostMapping("/rs/event")

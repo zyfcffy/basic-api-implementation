@@ -31,11 +31,13 @@ public class RsEvent {
     private String keyWord;
 
     @NotNull
+    @JsonView(CommonView.class)
     private int userId;
 
     @Valid
     private User user;
 
+    @JsonView(CommonView.class)
     private int voteNum;
 
     public String getEventName() {
