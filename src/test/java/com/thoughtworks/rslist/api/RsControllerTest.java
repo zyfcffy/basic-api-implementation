@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.api;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.dto.RsEvent;
 import com.thoughtworks.rslist.dto.User;
@@ -8,6 +7,7 @@ import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
@@ -36,8 +35,34 @@ class RsControllerTest {
     @Autowired
     RsEventRepository rsEventRepository;
 
+    UserEntity userEntity;
+    RsEventEntity rsEventEntity;
+
+    private void setData(){
+        userEntity = UserEntity.builder()
+                .userName("user0")
+                .age(20)
+                .gender("male")
+                .email("a@123.com")
+                .phone("17725563479")
+                .voteNum(10)
+                .build();
+        userRepository.save(userEntity);
+        rsEventEntity = RsEventEntity.builder()
+                .eventName("eventName01")
+                .keyWord("keyWord")
+                .userEntity(userEntity)
+                .build();
+        rsEventRepository.save(rsEventEntity);
+    }
+
     @BeforeEach
     void setUp() {
+        setData();
+    }
+
+    @AfterEach
+    void clear(){
         rsEventRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -67,21 +92,6 @@ class RsControllerTest {
 
     @Test
     void should_get_one_event_by_id() throws Exception {
-        UserEntity userEntity = UserEntity.builder()
-                .userName("user01")
-                .age(19)
-                .email("12@a.com")
-                .gender("male")
-                .phone("15527765431")
-                .voteNum(10)
-                .build();
-        userRepository.save(userEntity);
-        RsEventEntity rsEventEntity = RsEventEntity.builder()
-                .eventName("eventName01")
-                .keyWord("keyWord")
-                .user(userEntity)
-                .build();
-        rsEventRepository.save(rsEventEntity);
         mockMvc.perform(get("/rs/{id}",rsEventEntity.getId()))
                 .andExpect(jsonPath("$.eventName", is("eventName01")))
                 .andExpect(jsonPath("$.user.user_name",is("user01")));
@@ -121,21 +131,6 @@ class RsControllerTest {
 
     @Test
     void should_edit_one_rs_event_when_userId_equals_reEvent_userId() throws Exception {
-        UserEntity userEntity = UserEntity.builder()
-                .userName("user01")
-                .age(19)
-                .email("12@a.com")
-                .gender("male")
-                .phone("15527765431")
-                .voteNum(10)
-                .build();
-        userRepository.save(userEntity);
-        RsEventEntity rsEventEntity = RsEventEntity.builder()
-                .eventName("eventName01")
-                .keyWord("keyWord")
-                .user(userEntity)
-                .build();
-        rsEventRepository.save(rsEventEntity);
         mockMvc.perform(get("/rs/{id}",rsEventEntity.getId()))
                 .andExpect(status().isOk());
         String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":"+userEntity.getId()+"}";
@@ -144,8 +139,7 @@ class RsControllerTest {
                 .andExpect(status().isCreated());
         List<RsEventEntity> rsEvents = rsEventRepository.findAll();
         assertEquals("猪肉涨价了",rsEvents.get(0).getEventName());
-        assertEquals(userEntity.getId(),rsEvents.get(0).getUser().getId());
-
+        assertEquals(userEntity.getId(),rsEvents.get(0).getUserEntity().getId());
     }
 
     @Test
@@ -196,23 +190,14 @@ class RsControllerTest {
 
     @Test
     void user_exist_when_add_rs_event() throws Exception {
-        UserEntity userEntity = UserEntity.builder()
-                .userName("user0")
-                .age(20)
-                .gender("male")
-                .email("a@123.com")
-                .phone("17725563479")
-                .voteNum(10)
-                .build();
-        userRepository.save(userEntity);
         String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":"+userEntity.getId()+"}";
         mockMvc.perform(post("/rs/event")
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         List<RsEventEntity> rsEvents = rsEventRepository.findAll();
-        assertEquals(1,rsEvents.size());
+        assertEquals(2,rsEvents.size());
         assertEquals("猪肉涨价了",rsEvents.get(0).getEventName());
-        assertEquals(userEntity.getId(),rsEvents.get(0).getUser().getId());
+        assertEquals(userEntity.getId(),rsEvents.get(0).getUserEntity().getId());
     }
 
     @Test

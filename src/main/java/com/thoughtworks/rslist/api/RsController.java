@@ -66,7 +66,7 @@ public class RsController {
         RsEventEntity rsEventEntity = RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
                 .keyWord(rsEvent.getKeyWord())
-                .user(UserEntity.builder()
+                .userEntity(UserEntity.builder()
                         .id(rsEvent.getUserId())
                         .build())
                 .build();
@@ -81,7 +81,7 @@ public class RsController {
             throw new RequestNotValidException("invalid id");
         }
         RsEventEntity rsEvent = result.get();
-        UserEntity userEntity = rsEvent.getUser();
+        UserEntity userEntity = rsEvent.getUserEntity();
         return ResponseEntity.ok(RsEvent.builder()
                 .eventName(rsEvent.getEventName())
                 .keyWord(rsEvent.getKeyWord())
@@ -98,7 +98,7 @@ public class RsController {
     public ResponseEntity<List<RsEvent>> editOneRsEvent(@PathVariable Integer rsEventId,
                                                         @RequestBody RsEvent rsEvent) {
         RsEventEntity rsEventEntity = rsEventRepository.findById(rsEventId).get();
-        if (!rsEventEntity.getUser().getId().equals(rsEvent.getUserId())) {
+        if (!rsEventEntity.getUserEntity().getId().equals(rsEvent.getUserId())) {
             return ResponseEntity.badRequest().build();
         }
         if (rsEvent.getEventName() != null) {

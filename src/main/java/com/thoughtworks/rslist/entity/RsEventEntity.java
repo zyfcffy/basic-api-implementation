@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -25,6 +26,9 @@ public class RsEventEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private UserEntity userEntity;
+
+    @OneToMany(mappedBy = "rsEventEntity",cascade = CascadeType.REMOVE)
+    private List<VoteEntity> votes;
 
 }
