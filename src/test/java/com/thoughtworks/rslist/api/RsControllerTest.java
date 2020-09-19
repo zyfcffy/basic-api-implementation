@@ -49,8 +49,14 @@ class RsControllerTest {
                 .build();
         userRepository.save(userEntity);
         rsEventEntity = RsEventEntity.builder()
-                .eventName("eventName01")
-                .keyWord("keyWord")
+                .eventName("eventName1")
+                .keyWord("keyWord1")
+                .userEntity(userEntity)
+                .build();
+        rsEventRepository.save(rsEventEntity);
+        rsEventEntity = RsEventEntity.builder()
+                .eventName("eventName2")
+                .keyWord("keyWord2")
                 .userEntity(userEntity)
                 .build();
         rsEventRepository.save(rsEventEntity);
@@ -71,14 +77,11 @@ class RsControllerTest {
     void should_get_rs_list() throws Exception {
         mockMvc.perform(get("/rs/list"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-                .andExpect(jsonPath("$[0].keyWord", is("无分类")))
-                .andExpect(jsonPath("$[1].eventName", is("第二条事件")))
-                .andExpect(jsonPath("$[1].keyWord", is("无分类")))
-                .andExpect(jsonPath("$[2].eventName", is("第三条事件")))
-                .andExpect(jsonPath("$[2].keyWord", is("无分类")))
-                .andExpect(jsonPath("$[0]", not(hasKey("user"))));
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].eventName", is("eventName1")))
+                .andExpect(jsonPath("$[0].keyWord", is("keyWord1")))
+                .andExpect(jsonPath("$[1].eventName", is("eventName2")))
+                .andExpect(jsonPath("$[1].keyWord", is("keyWord2")));
     }
 
     @Test

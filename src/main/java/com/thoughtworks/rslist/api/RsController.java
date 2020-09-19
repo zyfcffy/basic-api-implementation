@@ -23,6 +23,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.thoughtworks.rslist.api.UserController.userList;
 
@@ -37,23 +38,24 @@ public class RsController {
     }
 
 
-    private List<RsEvent> rsList = initRsList();
-
-    private List<RsEvent> initRsList() {
-//        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-//        List<RsEvent> tempRsList = new ArrayList<>();
-//        tempRsList.add(new RsEvent("第一条事件", "无分类", user));
-//        tempRsList.add(new RsEvent("第二条事件", "无分类", user));
-//        tempRsList.add(new RsEvent("第三条事件", "无分类", user));
-        return new ArrayList<>();
-    }
+    private List<RsEvent> rsList = new ArrayList<>();
+    ;
 
     @JsonView(RsEvent.CommonView.class)
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
                                                        @RequestParam(required = false) Integer end) {
         if (start == null || end == null) {
-            return ResponseEntity.ok(rsList);
+            return ResponseEntity.ok(
+                    rsEventRepository.findAll().stream()
+                            .map(item ->
+                                    RsEvent.builder()
+                                            .eventName(item.getEventName())
+                                            .keyWord(item.getKeyWord())
+                                            .voteNum(item.getVoteNum())
+                                            .userId(item.getUserEntity().getId())
+                                            .build())
+                            .collect(Collectors.toList()));
         }
         if (start < 0 || start > rsList.size() || end < start || end > rsList.size()) {
             throw new IndexOutOfBoundsException("invalid request param");
