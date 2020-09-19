@@ -19,7 +19,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -56,13 +58,6 @@ class VoteControllerTest {
                 .userEntity(userEntity)
                 .build();
         rsEventRepository.save(rsEventEntity);
-//        voteEntity = VoteEntity.builder()
-//                .voteNum(2)
-//                .rsEvent(rsEventEntity)
-//                .user(userEntity)
-//                .voteTime(LocalDateTime.now())
-//                .build();
-//        voteRepository.save(voteEntity);
     }
 
     @BeforeEach
@@ -79,12 +74,18 @@ class VoteControllerTest {
 
     @Test
     void should_vote_successful_when_remain_votes_more_than_vote_num() throws Exception {
-        Vote vote = new Vote(rsEventEntity.getId(), userEntity.getId(), null, 5);
+        int voteNum = 5;
+        int index = 0;
+        Vote vote = new Vote(rsEventEntity.getId(), userEntity.getId(), null, voteNum);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
         mockMvc.perform(post("/rs/vote/{rsEventId}", rsEventEntity.getId())
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
+        List<VoteEntity> votes = voteRepository.findAll();
+        assertEquals(voteNum, votes.get(index).getVoteNum());
+        assertEquals(rsEventEntity.getId(), votes.get(index).getRsEventEntity().getId());
+        assertEquals(userEntity.getId(), votes.get(index).getUserEntity().getId());
     }
 
     @Test

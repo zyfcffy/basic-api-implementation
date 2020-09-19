@@ -23,12 +23,9 @@ public class RsEventEntity {
     @Column(name = "name")
     private String eventName;
     private String keyWord;
+    private int voteNum;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
-
-    @OneToMany(mappedBy = "rsEventEntity",cascade = CascadeType.REMOVE)
-    private List<VoteEntity> votes;
-
 }

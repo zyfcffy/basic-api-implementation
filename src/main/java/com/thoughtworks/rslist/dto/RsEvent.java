@@ -36,6 +36,8 @@ public class RsEvent {
     @Valid
     private User user;
 
+    private int voteNum;
+
     public String getEventName() {
         return eventName;
     }
@@ -69,5 +71,13 @@ public class RsEvent {
     @JsonIgnore
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public int getVoteNum() {
+        return voteNum;
+    }
+
+    public void setVoteNum(int voteNum) {
+        this.voteNum = voteNum;
     }
 }

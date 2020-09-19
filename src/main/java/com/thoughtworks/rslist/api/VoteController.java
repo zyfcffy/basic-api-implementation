@@ -35,6 +35,20 @@ public class VoteController {
                 || vote.getVoteNum() > userEntity.get().getVoteNum()) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok().build();
+        VoteEntity voteEntity =
+                VoteEntity.builder()
+                        .voteTime(vote.getVoteTime())
+                        .voteNum(vote.getVoteNum())
+                        .rsEventEntity(rsEventEntity.get())
+                        .userEntity(userEntity.get())
+                        .build();
+        voteRepository.save(voteEntity);
+        UserEntity user = userEntity.get();
+        user.setVoteNum(user.getVoteNum() - vote.getVoteNum());
+        userRepository.save(user);
+        RsEventEntity rsEvent = rsEventEntity.get();
+        rsEvent.setVoteNum(rsEvent.getVoteNum() + vote.getVoteNum());
+        rsEventRepository.save(rsEvent);
+        return ResponseEntity.created(null).build();
     }
 }
