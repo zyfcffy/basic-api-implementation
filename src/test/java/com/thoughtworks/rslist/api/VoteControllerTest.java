@@ -98,11 +98,21 @@ class VoteControllerTest {
     }
 
     @Test
-    void should_return_bad_request_when_user_id_is_not_present() throws Exception {
-        Vote vote = new Vote(rsEventEntity.getId(), 10, null, 20);
+    void should_return_bad_request_when_vote_user_id_is_not_exist() throws Exception {
+        Vote vote = new Vote(rsEventEntity.getId(), 10, null, 5);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
         mockMvc.perform(post("/rs/vote/{rsEventId}", rsEventEntity.getId())
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_return_bad_request_when_vote_rs_event_id_not_exist() throws Exception {
+        Vote vote = new Vote(10, userEntity.getId(), null, 5);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(vote);
+        mockMvc.perform(post("/rs/vote/{rsEventId}", 10)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
