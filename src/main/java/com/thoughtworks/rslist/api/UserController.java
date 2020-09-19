@@ -48,8 +48,8 @@ public class UserController {
                 .phone(user.getPhone())
                 .build();
         userRepository.save(userEntity);
-        userList.add(user);
-        return ResponseEntity.created(null).header("index", String.valueOf(userList.size())).build();
+        List<UserEntity> users = userRepository.findAll();
+        return ResponseEntity.created(null).header("index", String.valueOf(users.size())).build();
     }
 
     @GetMapping("/user/users")

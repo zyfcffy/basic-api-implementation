@@ -51,15 +51,14 @@ class UserControllerTest {
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("index", "2"));
+                .andExpect(status().isCreated());
         List<UserEntity> users = userRepository.findAll();
-        assertEquals(1, users.size());
-        assertEquals("xiaowang", users.get(0).getUserName());
-        assertEquals("female", users.get(0).getGender());
-        assertEquals(19, users.get(0).getAge());
-        assertEquals("a@thoughtworks.com", users.get(0).getEmail());
-        assertEquals("18888888888", users.get(0).getPhone());
+        int index = users.size()-1;
+        assertEquals("xiaowang", users.get(index).getUserName());
+        assertEquals("female", users.get(index).getGender());
+        assertEquals(19, users.get(index).getAge());
+        assertEquals("a@thoughtworks.com", users.get(index).getEmail());
+        assertEquals("18888888888", users.get(index).getPhone());
     }
 
     @Test
@@ -69,7 +68,8 @@ class UserControllerTest {
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
     }
 
     @Test
@@ -79,7 +79,8 @@ class UserControllerTest {
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
     }
 
     @Test
@@ -89,7 +90,8 @@ class UserControllerTest {
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
     }
 
     @Test
@@ -99,7 +101,8 @@ class UserControllerTest {
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
     }
 
     @Test
@@ -109,7 +112,8 @@ class UserControllerTest {
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
     }
 
     @Test
@@ -119,7 +123,8 @@ class UserControllerTest {
         String userJson = objectMapper.writeValueAsString(user);
         mockMvc.perform(post("/user/register")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid user")));
     }
 
     @Test
@@ -176,7 +181,7 @@ class UserControllerTest {
         userRepository.save(userEntity);
         mockMvc.perform(get("/user/{id}", userEntity.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.id", is(userEntity.getId())))
                 .andExpect(jsonPath("$.userName", is("user01")))
                 .andExpect(jsonPath("$.age", is(19)))
                 .andExpect(jsonPath("$.gender", is("male")))
@@ -197,7 +202,7 @@ class UserControllerTest {
         mockMvc.perform(delete("/user/{id}", userEntity.getId()))
                 .andExpect(status().isNoContent());
         List<UserEntity> userEntities = userRepository.findAll();
-        assertEquals(0,userEntities.size());
+        assertEquals(0, userEntities.size());
     }
 
     @Test
@@ -217,11 +222,11 @@ class UserControllerTest {
                 .userEntity(userEntity)
                 .build();
         rsEventRepository.save(rsEventEntity);
-        mockMvc.perform(delete("/user/{id}",userEntity.getId()))
+        mockMvc.perform(delete("/user/{id}", userEntity.getId()))
                 .andExpect(status().isNoContent());
         List<UserEntity> userEntities = userRepository.findAll();
         List<RsEventEntity> rsEventEntities = rsEventRepository.findAll();
-        assertEquals(0,userEntities.size());
-        assertEquals(0,rsEventEntities.size());
+        assertEquals(0, userEntities.size());
+        assertEquals(0, rsEventEntities.size());
     }
 }

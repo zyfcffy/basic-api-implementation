@@ -37,10 +37,6 @@ public class RsController {
         this.userRepository = userRepository;
     }
 
-
-    private List<RsEvent> rsList = new ArrayList<>();
-    ;
-
     @JsonView(RsEvent.CommonView.class)
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
