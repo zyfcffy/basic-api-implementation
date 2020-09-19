@@ -36,11 +36,12 @@ class RsControllerTest {
     RsEventRepository rsEventRepository;
 
     UserEntity userEntity;
-    RsEventEntity rsEventEntity;
+    RsEventEntity rsEventEntity01;
+    RsEventEntity rsEventEntity02;
 
     private void setData() {
         userEntity = UserEntity.builder()
-                .userName("user0")
+                .userName("user1")
                 .age(20)
                 .gender("male")
                 .email("a@123.com")
@@ -48,20 +49,20 @@ class RsControllerTest {
                 .voteNum(10)
                 .build();
         userRepository.save(userEntity);
-        rsEventEntity = RsEventEntity.builder()
+        rsEventEntity01 = RsEventEntity.builder()
                 .eventName("eventName1")
                 .keyWord("keyWord1")
                 .userEntity(userEntity)
                 .voteNum(1)
                 .build();
-        rsEventRepository.save(rsEventEntity);
-        rsEventEntity = RsEventEntity.builder()
+        rsEventRepository.save(rsEventEntity01);
+        rsEventEntity02 = RsEventEntity.builder()
                 .eventName("eventName2")
                 .keyWord("keyWord2")
                 .userEntity(userEntity)
                 .voteNum(3)
                 .build();
-        rsEventRepository.save(rsEventEntity);
+        rsEventRepository.save(rsEventEntity02);
     }
 
     @BeforeEach
@@ -101,19 +102,13 @@ class RsControllerTest {
     }
 
     @Test
-    void should_get_one_event() throws Exception {
-        mockMvc.perform(get("/rs/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.eventName", is("第一条事件")))
-                .andExpect(jsonPath("$.keyWord", is("无分类")))
-                .andExpect(jsonPath("$", not(hasKey("user"))));
-    }
-
-    @Test
     void should_get_one_event_by_id() throws Exception {
-        mockMvc.perform(get("/rs/{id}", rsEventEntity.getId()))
-                .andExpect(jsonPath("$.eventName", is("eventName01")))
-                .andExpect(jsonPath("$.user.user_name", is("user01")));
+        mockMvc.perform(get("/rs/{id}", rsEventEntity01.getId()))
+                .andExpect(jsonPath("$.eventName", is("eventName1")))
+                .andExpect(jsonPath("$.keyWord", is("keyWord1")))
+                .andExpect(jsonPath("$.voteNum", is(1)))
+                .andExpect(jsonPath("$.userId", is(userEntity.getId())))
+                .andExpect(jsonPath("$.user.user_name", is("user1")));
     }
 
     @Test
@@ -138,10 +133,10 @@ class RsControllerTest {
 
     @Test
     void should_edit_one_rs_event_when_userId_equals_reEvent_userId() throws Exception {
-        mockMvc.perform(get("/rs/{id}", rsEventEntity.getId()))
+        mockMvc.perform(get("/rs/{id}", rsEventEntity01.getId()))
                 .andExpect(status().isOk());
         String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":" + userEntity.getId() + "}";
-        mockMvc.perform(put("/rs/event/{rsEventId}", rsEventEntity.getId())
+        mockMvc.perform(put("/rs/event/{rsEventId}", rsEventEntity01.getId())
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         List<RsEventEntity> rsEvents = rsEventRepository.findAll();

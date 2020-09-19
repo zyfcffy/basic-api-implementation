@@ -103,6 +103,8 @@ public class RsController {
                         userEntity.getAge(),
                         userEntity.getEmail(),
                         userEntity.getPhone()))
+                .voteNum(rsEvent.getVoteNum())
+                .userId(rsEvent.getUserEntity().getId())
                 .build());
     }
 
