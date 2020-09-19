@@ -95,8 +95,31 @@ public class RsController {
                 .build());
     }
 
+    @GetMapping("/rs/byIndex/{index}")
+    public ResponseEntity<RsEvent> getRsEvent(@PathVariable int index) throws RequestNotValidException {
+        List<RsEvent> rsEvents =
+                rsEventRepository.findAll().stream()
+                        .map(
+                                item ->
+                                        RsEvent.builder()
+                                                .eventName(item.getEventName())
+                                                .keyWord(item.getKeyWord())
+                                                .userId(item.getId())
+                                                .voteNum(item.getVoteNum())
+                                                .build())
+                        .collect(Collectors.toList());
+        if (index < 1 || index > rsEvents.size()) {
+            throw new RequestNotValidException("invalid index");
+        }
+        return ResponseEntity.ok(rsEvents.get(index - 1));
+    }
+
     @PostMapping("/rs/event")
-    public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
+    public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent,
+                                             BindingResult bindingResult) throws InvalidRsEventException {
+        if (bindingResult.getAllErrors().size() != 0) {
+            throw new InvalidRsEventException("invalid param");
+        }
         Optional<UserEntity> user = userRepository.findById(rsEvent.getUserId());
         if(!user.isPresent()){
             return ResponseEntity.badRequest().build();

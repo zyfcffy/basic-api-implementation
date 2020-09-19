@@ -104,7 +104,6 @@ class RsControllerTest {
         mockMvc.perform(get("/rs/{id}", rsEventEntity01.getId()))
                 .andExpect(jsonPath("$.eventName", is("eventName1")))
                 .andExpect(jsonPath("$.keyWord", is("keyWord1")))
-                .andExpect(jsonPath("$.voteNum", is(1)))
                 .andExpect(jsonPath("$.userId", is(userEntity.getId())))
                 .andExpect(jsonPath("$.user.user_name", is("user1")));
     }
@@ -136,6 +135,22 @@ class RsControllerTest {
     }
 
     @Test
+    void event_name_should_not_empty() throws Exception {
+        String json = "{\"eventName\":\"\",\"keyWord\":\"经济\",\"userId\":" + userEntity.getId() + "}";
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void event_key_word_should_not_empty() throws Exception {
+        String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"\",\"userId\":" + userEntity.getId() + "}";
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void should_edit_one_rs_event_when_userId_equals_reEvent_userId() throws Exception {
         mockMvc.perform(get("/rs/{id}", rsEventEntity01.getId()))
                 .andExpect(status().isOk());
@@ -155,94 +170,27 @@ class RsControllerTest {
         int rsEventSize = 1;
         assertEquals(rsEventSize,rsEventRepository.findAll().size());
     }
-//
-//    @Test
-//    void add_event_user_should_be_valid() throws Exception {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String json = objectMapper.writeValueAsString(rsEvent);
-//        mockMvc.perform(post("/rs/event")
-//                .content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void event_name_should_not_empty() throws Exception {
-//        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-//        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", 0, 0);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String json = objectMapper.writeValueAsString(rsEvent);
-//        mockMvc.perform(post("/rs/event")
-//                .content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void event_key_word_should_not_empty() throws Exception {
-//        User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
-//        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", 0, 0);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String json = objectMapper.writeValueAsString(rsEvent);
-//        mockMvc.perform(post("/rs/event")
-//                .content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//    }
-//
-//    @Test
-//    void user_exist_when_add_rs_event() throws Exception {
-//        String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":" + userEntity.getId() + "}";
-//        mockMvc.perform(post("/rs/event")
-//                .content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isCreated());
-//        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
-//        assertEquals(2, rsEvents.size());
-//        assertEquals("猪肉涨价了", rsEvents.get(0).getEventName());
-//        assertEquals(userEntity.getId(), rsEvents.get(0).getUserEntity().getId());
-//    }
-//
-//    @Test
-//    void user_not_exist_when_add_rs_event() throws Exception {
-//        User user = new User("Mary", "female", 20, "a@thoughtworks.com", "18888888888");
-//        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", 0, 0);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String json = objectMapper.writeValueAsString(rsEvent);
-//        mockMvc.perform(post("/rs/event")
-//                .content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isCreated());
-//        mockMvc.perform(get("/user/users"))
-//                .andExpect(jsonPath("$", hasSize(2)))
-//                .andExpect(jsonPath("$[1].user_name", is("Mary")))
-//                .andExpect(jsonPath("$[1].user_gender", is("female")));
-//        mockMvc.perform(get("/rs/list"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$", hasSize(4)))
-//                .andExpect(jsonPath("$[3].eventName", is("猪肉涨价了")))
-//                .andExpect(jsonPath("$[3].keyWord", is("经济")));
-//    }
-//
-//    @Test
-//    void should_return_400_and_error_message_when_IndexOutOfBoundsException() throws Exception {
-//        mockMvc.perform(get("/rs/list?start=-1&end=5"))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.error", is("invalid request param")));
-//    }
-//
-//    @Test
-//    void should_return_400_and_error_message_when_InvalidIndexException() throws Exception {
-//        mockMvc.perform(get("/rs/40"))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.error", is("invalid index")));
-//    }
-//
-//    @Test
-//    void should_return_400_and_error_message_when_InvalidRsEventException() throws Exception {
-//        User user = new User("", "female", 1, "a@thoughtworks.com", "18888888888");
-//        RsEvent rsEvent = new RsEvent("猪肉涨价了", "经济", 0, 0);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String json = objectMapper.writeValueAsString(rsEvent);
-//        mockMvc.perform(post("/rs/event")
-//                .content(json).contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.error", is("invalid param")));
-//    }
 
+    @Test
+    void should_return_400_and_error_message_when_IndexOutOfBoundsException() throws Exception {
+        mockMvc.perform(get("/rs/list?start=-1&end=5"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid request param")));
+    }
+
+    @Test
+    void should_return_400_and_error_message_when_InvalidIndexException() throws Exception {
+        mockMvc.perform(get("/rs/byIndex/40"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid index")));
+    }
+
+    @Test
+    void should_return_400_and_error_message_when_InvalidRsEventException() throws Exception {
+        String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"\",\"userId\":" + userEntity.getId() + "}";
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error", is("invalid param")));
+    }
 }
