@@ -97,6 +97,10 @@ public class RsController {
 
     @PostMapping("/rs/event")
     public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent) {
+        Optional<UserEntity> user = userRepository.findById(rsEvent.getUserId());
+        if(!user.isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
         RsEventEntity rsEventEntity = RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
                 .keyWord(rsEvent.getKeyWord())
@@ -128,10 +132,10 @@ public class RsController {
         return ResponseEntity.created(null).build();
     }
 
-    @DeleteMapping("/rs/event/{index}")
-    private ResponseEntity<List<RsEvent>> deleteEvent(@PathVariable Integer index) {
-        rsList.remove(index - 1);
-        return ResponseEntity.ok(rsList);
+    @DeleteMapping("/rs/event/{deleteId}")
+    private ResponseEntity<Object> deleteEvent(@PathVariable Integer deleteId) {
+        rsEventRepository.deleteById(deleteId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(InvalidRsEventException.class)

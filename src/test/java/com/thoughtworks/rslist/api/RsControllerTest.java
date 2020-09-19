@@ -116,12 +116,23 @@ class RsControllerTest {
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         int index = 2;
+        int rsEventSize = 3;
         RsEventEntity rsEvent = rsEventRepository.findAll().get(index);
-        assertEquals(3, rsEventRepository.findAll().size());
+        assertEquals(rsEventSize, rsEventRepository.findAll().size());
         assertEquals("猪肉涨价了", rsEvent.getEventName());
         assertEquals("经济", rsEvent.getKeyWord());
-        assertEquals(0, rsEvent.getVoteNum());
         assertEquals(userEntity.getId(), rsEvent.getUserEntity().getId());
+    }
+
+    @Test
+    void should_add_rs_event_when_user_not_exit() throws Exception {
+        String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":100}";
+        mockMvc.perform(post("/rs/event")
+                .content(json).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
+        int oldRsEventSize = 2;
+        assertEquals(oldRsEventSize, rsEvents.size());
     }
 
     @Test
@@ -136,19 +147,14 @@ class RsControllerTest {
         assertEquals("猪肉涨价了", rsEvents.get(0).getEventName());
         assertEquals(userEntity.getId(), rsEvents.get(0).getUserEntity().getId());
     }
-//
-//    @Test
-//    void should_delete_one_rs_event() throws Exception {
-//        mockMvc.perform(get("/rs/list"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].eventName", is("第一条事件")))
-//                .andExpect(jsonPath("$[0].keyWord", is("无分类")));
-//        mockMvc.perform(delete("/rs/event/1"))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$", hasSize(2)))
-//                .andExpect(jsonPath("$[0].eventName", is("第二条事件")))
-//                .andExpect(jsonPath("$[0].keyWord", is("无分类")));
-//    }
+
+    @Test
+    void should_delete_one_rs_event() throws Exception {
+        mockMvc.perform(delete("/rs/event/{deleteId}",rsEventEntity01.getId()))
+                .andExpect(status().isNoContent());
+        int rsEventSize = 1;
+        assertEquals(rsEventSize,rsEventRepository.findAll().size());
+    }
 //
 //    @Test
 //    void add_event_user_should_be_valid() throws Exception {
@@ -239,13 +245,4 @@ class RsControllerTest {
 //                .andExpect(jsonPath("$.error", is("invalid param")));
 //    }
 
-    @Test
-    void should_add_rs_event_when_user_not_exit() throws Exception {
-        String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":1}";
-        mockMvc.perform(post("/rs/event")
-                .content(json).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
-        assertEquals(0, rsEvents.size());
-    }
 }
