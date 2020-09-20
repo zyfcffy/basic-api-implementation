@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Data
@@ -21,12 +20,6 @@ public class VoteEntity {
     private Integer id;
     private LocalDateTime voteTime;
     private int voteNum;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "rs_event_id")
-    private RsEventEntity rsEventEntity;
+    private int rsEventId;
+    private int userId;
 }

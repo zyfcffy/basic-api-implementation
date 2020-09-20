@@ -21,8 +21,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -53,8 +58,8 @@ class VoteControllerTest {
                 .build();
         userRepository.save(userEntity);
         rsEventEntity = RsEventEntity.builder()
-                .eventName("eventName01")
-                .keyWord("keyWord")
+                .eventName("eventName1")
+                .keyWord("keyWord1")
                 .userEntity(userEntity)
                 .build();
         rsEventRepository.save(rsEventEntity);
@@ -84,13 +89,13 @@ class VoteControllerTest {
                 .andExpect(status().isCreated());
         List<VoteEntity> votes = voteRepository.findAll();
         assertEquals(voteNum, votes.get(index).getVoteNum());
-        assertEquals(rsEventEntity.getId(), votes.get(index).getRsEventEntity().getId());
-        assertEquals(userEntity.getId(), votes.get(index).getUserEntity().getId());
+        assertEquals(rsEventEntity.getId(), votes.get(index).getRsEventId());
+        assertEquals(userEntity.getId(), votes.get(index).getUserId());
     }
 
     @Test
     void should_return_bad_request_when_remain_vote_less_than_votes() throws Exception {
-        Vote vote = new Vote(rsEventEntity.getId(), userEntity.getId(), null, 20);
+        Vote vote = new Vote(rsEventEntity.getId(), rsEventEntity.getId(), null, 20);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
         mockMvc.perform(post("/rs/vote/{rsEventId}", rsEventEntity.getId())
@@ -110,11 +115,58 @@ class VoteControllerTest {
 
     @Test
     void should_return_bad_request_when_vote_rs_event_id_not_exist() throws Exception {
-        Vote vote = new Vote(10, userEntity.getId(), null, 5);
+        Vote vote = new Vote(10, rsEventEntity.getId(), null, 5);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
         mockMvc.perform(post("/rs/vote/{rsEventId}", 10)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_get_votes_by_user_id_and_rs_event_id() throws Exception {
+        setVotesData();
+        mockMvc.perform(get("/votes")
+                .param("userId", String.valueOf(userEntity.getId()))
+                .param("rsEventId", String.valueOf(rsEventEntity.getId())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andExpect(jsonPath("$[0].userId", is(userEntity.getId())))
+                .andExpect(jsonPath("$[0].rsEventId", is(rsEventEntity.getId())))
+                .andExpect(jsonPath("$[0].voteNum", is(1)));
+    }
+
+//    @Test
+//    void should_get_votes_
+
+    public void setVotesData(){
+        voteEntity = VoteEntity.builder()
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 10, 30))
+                .userId(userEntity.getId())
+                .rsEventId(rsEventEntity.getId())
+                .voteNum(1)
+                .build();
+        voteRepository.save(voteEntity);
+        voteEntity = VoteEntity.builder()
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 12, 50))
+                .userId(userEntity.getId())
+                .rsEventId(rsEventEntity.getId())
+                .voteNum(2)
+                .build();
+        voteRepository.save(voteEntity);
+        voteEntity = VoteEntity.builder()
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 15, 30))
+                .userId(userEntity.getId())
+                .rsEventId(rsEventEntity.getId())
+                .voteNum(3)
+                .build();
+        voteRepository.save(voteEntity);
+        voteEntity = VoteEntity.builder()
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 16, 30))
+                .userId(userEntity.getId())
+                .rsEventId(rsEventEntity.getId())
+                .voteNum(4)
+                .build();
+        voteRepository.save(voteEntity);
     }
 }

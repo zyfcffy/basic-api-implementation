@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class VoteController {
@@ -27,7 +28,7 @@ public class VoteController {
     }
 
     @PostMapping("rs/vote/{rsEventId}")
-    public ResponseEntity<Object> vote(@PathVariable Integer rsEventId , @RequestBody Vote vote){
+    public ResponseEntity<Object> vote(@PathVariable Integer rsEventId, @RequestBody Vote vote) {
         Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
         Optional<UserEntity> userEntity = userRepository.findById(vote.getUserId());
         if (!rsEventEntity.isPresent()
@@ -39,8 +40,8 @@ public class VoteController {
                 VoteEntity.builder()
                         .voteTime(vote.getVoteTime())
                         .voteNum(vote.getVoteNum())
-                        .rsEventEntity(rsEventEntity.get())
-                        .userEntity(userEntity.get())
+                        .rsEventId(rsEventId)
+                        .userId(userEntity.get().getId())
                         .build();
         voteRepository.save(voteEntity);
         UserEntity user = userEntity.get();
@@ -50,5 +51,16 @@ public class VoteController {
         rsEvent.setVoteNum(rsEvent.getVoteNum() + vote.getVoteNum());
         rsEventRepository.save(rsEvent);
         return ResponseEntity.created(null).build();
+    }
+
+    @GetMapping("/votes")
+    public ResponseEntity<List<Vote>> getVotes(@RequestParam int userId, @RequestParam int rsEventId) {
+        List<VoteEntity> votes = voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId);
+        return ResponseEntity.ok(votes.stream().map(vote -> Vote.builder()
+                .userId(vote.getUserId())
+                .rsEventId(vote.getRsEventId())
+                .voteNum(vote.getVoteNum())
+                .voteTime(vote.getVoteTime())
+                .build()).collect(Collectors.toList()));
     }
 }
