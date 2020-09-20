@@ -124,7 +124,7 @@ class VoteControllerTest {
     }
 
     @Test
-    void should_get_votes_by_user_id_and_rs_event_id() throws Exception {
+    void should_get_votes_in_page_by_user_id_and_rs_event_id() throws Exception {
         setVotesData();
         mockMvc.perform(get("/votes")
                 .param("userId", String.valueOf(userEntity.getId()))
@@ -142,58 +142,69 @@ class VoteControllerTest {
                 .andExpect(jsonPath("$[0].voteNum", is(2)));
     }
 
+    @Test
+    void should_return_bad_request_when_start_time_more_than_end_time() throws Exception {
+        setVotesData();
+        LocalDateTime startTime = LocalDateTime.of(2020, 9, 19, 8, 20);
+        LocalDateTime endTime = LocalDateTime.of(2020, 9, 19, 8, 15);
+        mockMvc.perform(get("/votes/time")
+                .param("startTime", String.valueOf(startTime))
+                .param("endTime", String.valueOf(endTime)))
+                .andExpect(status().isBadRequest());
+    }
+
     public void setVotesData() {
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 10, 30))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 10))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(1)
                 .build();
         voteRepository.save(voteEntity);
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 12, 50))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 12))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(1)
                 .build();
         voteRepository.save(voteEntity);
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 15, 30))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 15))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(1)
                 .build();
         voteRepository.save(voteEntity);
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 16, 30))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 16))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(1)
                 .build();
         voteRepository.save(voteEntity);
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 17, 30))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 17))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(1)
                 .build();
         voteRepository.save(voteEntity);
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 19, 30))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 19))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(2)
                 .build();
         voteRepository.save(voteEntity);
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 21, 30))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 21))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(1)
                 .build();
         voteRepository.save(voteEntity);
         voteEntity = VoteEntity.builder()
-                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 23, 30))
+                .voteTime(LocalDateTime.of(2020, 9, 19, 8, 23))
                 .userId(userEntity.getId())
                 .rsEventId(rsEventEntity.getId())
                 .voteNum(1)

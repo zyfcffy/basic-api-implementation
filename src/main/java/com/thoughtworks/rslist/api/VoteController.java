@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,5 +70,14 @@ public class VoteController {
                 .voteNum(vote.getVoteNum())
                 .voteTime(vote.getVoteTime())
                 .build()).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/votes/time")
+    public ResponseEntity<List<Vote>> getVotesBetween(@RequestParam LocalDateTime startTime,
+                                                      @RequestParam LocalDateTime endTime){
+        if(startTime.isAfter(endTime)){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok().build();
     }
 }
