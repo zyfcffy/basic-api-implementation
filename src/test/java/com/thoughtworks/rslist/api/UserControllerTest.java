@@ -149,13 +149,21 @@ class UserControllerTest {
 
     @Test
     void should_return_formatting_users() throws Exception {
-        mockMvc.perform(get("/user/users"))
+        UserEntity userEntity = UserEntity.builder()
+                .userName("user01")
+                .age(19)
+                .email("12@a.com")
+                .gender("male")
+                .phone("15527765431")
+                .build();
+        userRepository.save(userEntity);
+        mockMvc.perform(get("/users"))
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].user_name", is("xiaowang")))
-                .andExpect(jsonPath("$[0].user_gender", is("female")))
+                .andExpect(jsonPath("$[0].user_name", is("user01")))
+                .andExpect(jsonPath("$[0].user_gender", is("male")))
                 .andExpect(jsonPath("$[0].user_age", is(19)))
-                .andExpect(jsonPath("$[0].user_email", is("a@thoughtworks.com")))
-                .andExpect(jsonPath("$[0].user_phone", is("18888888888")));
+                .andExpect(jsonPath("$[0].user_email", is("12@a.com")))
+                .andExpect(jsonPath("$[0].user_phone", is("15527765431")));
     }
 
     @Test

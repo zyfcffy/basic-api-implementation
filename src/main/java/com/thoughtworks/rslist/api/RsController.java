@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.thoughtworks.rslist.api.UserController.userList;
-
 @RestController
 public class RsController {
     private final UserRepository userRepository;
