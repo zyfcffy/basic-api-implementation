@@ -21,15 +21,6 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    private final UserRepository userRepository;
-    private final RsEventRepository rsEventRepository;
-
-
-    public UserController(UserRepository userRepository, RsEventRepository rsEventRepository) {
-        this.userRepository = userRepository;
-        this.rsEventRepository = rsEventRepository;
-    }
-
     @PostMapping("/user/register")
     public ResponseEntity<Object> register(@Valid @RequestBody User user, BindingResult bindingResult) throws InvalidUserException {
         if (bindingResult.getAllErrors().size() != 0) {

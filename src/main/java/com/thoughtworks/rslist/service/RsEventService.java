@@ -31,8 +31,8 @@ public class RsEventService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<RsEventEntity> getRsEventById(Integer id){
-        return rsEventRepository.findById(id);
+    public Optional<RsEventEntity> getRsEventById(Integer rsEventId){
+        return rsEventRepository.findById(rsEventId);
     }
 
     public void saveRsEvent(RsEvent rsEvent){

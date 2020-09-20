@@ -78,7 +78,7 @@ class RsControllerTest {
 
     @Test
     void should_get_rs_list() throws Exception {
-        mockMvc.perform(get("/rs/list"))
+        mockMvc.perform(get("/rs/events"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].eventName", is("eventName1")))
@@ -91,7 +91,7 @@ class RsControllerTest {
 
     @Test
     void should_get_rs_event_by_range() throws Exception {
-        mockMvc.perform(get("/rs/list?start=1&end=2"))
+        mockMvc.perform(get("/rs/events?start=1&end=2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].eventName", is("eventName1")))
                 .andExpect(jsonPath("$[0].keyWord", is("keyWord1")))
@@ -101,7 +101,7 @@ class RsControllerTest {
 
     @Test
     void should_get_one_event_by_id() throws Exception {
-        mockMvc.perform(get("/rs/{id}", rsEventEntity01.getId()))
+        mockMvc.perform(get("/rs/event/{rsEventId}", rsEventEntity01.getId()))
                 .andExpect(jsonPath("$.eventName", is("eventName1")))
                 .andExpect(jsonPath("$.keyWord", is("keyWord1")))
                 .andExpect(jsonPath("$.userId", is(userEntity.getId())))
@@ -152,8 +152,6 @@ class RsControllerTest {
 
     @Test
     void should_edit_one_rs_event_when_userId_equals_reEvent_userId() throws Exception {
-        mockMvc.perform(get("/rs/{id}", rsEventEntity01.getId()))
-                .andExpect(status().isOk());
         String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":" + userEntity.getId() + "}";
         mockMvc.perform(put("/rs/event/{rsEventId}", rsEventEntity01.getId())
                 .content(json).contentType(MediaType.APPLICATION_JSON))
@@ -173,7 +171,7 @@ class RsControllerTest {
 
     @Test
     void should_return_400_and_error_message_when_IndexOutOfBoundsException() throws Exception {
-        mockMvc.perform(get("/rs/list?start=-1&end=5"))
+        mockMvc.perform(get("/rs/events?start=-1&end=5"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid request param")));
     }

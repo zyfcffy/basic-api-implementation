@@ -6,11 +6,8 @@ import com.thoughtworks.rslist.dto.User;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exceptions.CommentError;
-import com.thoughtworks.rslist.exceptions.InvalidIndexException;
 import com.thoughtworks.rslist.exceptions.InvalidRsEventException;
 import com.thoughtworks.rslist.exceptions.RequestNotValidException;
-import com.thoughtworks.rslist.repository.RsEventRepository;
-import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.service.RsEventService;
 import com.thoughtworks.rslist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +33,7 @@ public class RsController {
     UserService  userService;
 
     @JsonView(RsEvent.CommonView.class)
-    @GetMapping("/rs/list")
+    @GetMapping("/rs/events")
     public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
                                                        @RequestParam(required = false) Integer end) {
         List<RsEvent> rsEvents = rsEventService.getAllRsEvent();
@@ -49,9 +46,9 @@ public class RsController {
         return ResponseEntity.ok(rsEvents.subList(start - 1, end));
     }
 
-    @GetMapping("rs/{id}")
-    public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer id) throws RequestNotValidException {
-        Optional<RsEventEntity> result = rsEventService.getRsEventById(id);
+    @GetMapping("rs/event/{rsEventId}")
+    public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer rsEventId) throws RequestNotValidException {
+        Optional<RsEventEntity> result = rsEventService.getRsEventById(rsEventId);
         if (!result.isPresent()) {
             throw new RequestNotValidException("invalid id");
         }
@@ -95,17 +92,19 @@ public class RsController {
     }
 
     @PutMapping("/rs/event/{rsEventId}")
-    public ResponseEntity<List<RsEvent>> editOneRsEvent(@PathVariable Integer rsEventId,
+    public ResponseEntity<Object> editOneRsEvent(@PathVariable Integer rsEventId,
                                                         @RequestBody RsEvent rsEvent) {
         RsEventEntity rsEventEntity = rsEventService.getRsEventById(rsEventId).get();
         if (!rsEventEntity.getUserEntity().getId().equals(rsEvent.getUserId())) {
             return ResponseEntity.badRequest().build();
         }
         if (rsEvent.getEventName() != null) {
+            rsEventEntity.setId(rsEventEntity.getId());
             rsEventEntity.setEventName(rsEvent.getEventName());
             rsEventService.updateRsEvent(rsEventEntity);
         }
         if (rsEvent.getKeyWord() != null) {
+            rsEventEntity.setId(rsEventEntity.getId());
             rsEventEntity.setKeyWord(rsEvent.getKeyWord());
             rsEventService.updateRsEvent(rsEventEntity);
         }
