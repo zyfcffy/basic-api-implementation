@@ -30,7 +30,7 @@ public class RsController {
     RsEventService rsEventService;
 
     @Autowired
-    UserService  userService;
+    UserService userService;
 
     @JsonView(RsEvent.CommonView.class)
     @GetMapping("/rs/events")
@@ -84,7 +84,7 @@ public class RsController {
             throw new InvalidRsEventException("invalid param");
         }
         Optional<UserEntity> user = userService.getUserById(rsEvent.getUserId());
-        if(!user.isPresent()){
+        if (!user.isPresent()) {
             return ResponseEntity.badRequest().build();
         }
         rsEventService.saveRsEvent(rsEvent);
@@ -93,7 +93,7 @@ public class RsController {
 
     @PutMapping("/rs/event/{rsEventId}")
     public ResponseEntity<Object> editOneRsEvent(@PathVariable Integer rsEventId,
-                                                        @RequestBody RsEvent rsEvent) {
+                                                 @RequestBody RsEvent rsEvent) {
         RsEventEntity rsEventEntity = rsEventService.getRsEventById(rsEventId).get();
         if (!rsEventEntity.getUserEntity().getId().equals(rsEvent.getUserId())) {
             return ResponseEntity.badRequest().build();

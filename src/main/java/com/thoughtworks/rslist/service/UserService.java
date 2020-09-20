@@ -18,7 +18,7 @@ public class UserService {
     @Autowired
     RsEventRepository rsEventRepository;
 
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         List<UserEntity> users = userRepository.findAll();
         return users.stream().map(item -> User.builder()
                 .userName(item.getUserName())
@@ -29,7 +29,7 @@ public class UserService {
                 .voteNum(item.getVoteNum()).build()).collect(Collectors.toList());
     }
 
-    public List<UserEntity> register(User user){
+    public List<UserEntity> register(User user) {
         UserEntity userEntity = UserEntity.builder()
                 .userName(user.getUserName())
                 .age(user.getAge())
@@ -41,15 +41,15 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<UserEntity> getUserById(Integer id){
+    public Optional<UserEntity> getUserById(Integer id) {
         return userRepository.findById(id);
     }
 
-    public void deleteUserById(Integer id){
+    public void deleteUserById(Integer id) {
         userRepository.deleteById(id);
     }
 
-    public void updateUser(UserEntity userEntity){
+    public void updateUser(UserEntity userEntity) {
         userRepository.save(userEntity);
     }
 }

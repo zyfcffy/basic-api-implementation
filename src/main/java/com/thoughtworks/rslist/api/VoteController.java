@@ -51,7 +51,7 @@ public class VoteController {
                 || vote.getVoteNum() > userEntity.get().getVoteNum()) {
             return ResponseEntity.badRequest().build();
         }
-        voteService.save(vote,rsEventId,userEntity.get().getId());
+        voteService.save(vote, rsEventId, userEntity.get().getId());
         UserEntity user = userEntity.get();
         user.setVoteNum(user.getVoteNum() - vote.getVoteNum());
         userService.updateUser(user);
@@ -73,11 +73,11 @@ public class VoteController {
 
     @GetMapping("/votes/time")
     public ResponseEntity<List<Vote>> getVotesBetween(@RequestParam String startTime,
-                                                      @RequestParam String endTime){
+                                                      @RequestParam String endTime) {
         DateTimeFormatter datsFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime start = LocalDateTime.parse(startTime,datsFormatter);
-        LocalDateTime end = LocalDateTime.parse(endTime,datsFormatter);
-        if(start.isAfter(end)){
+        LocalDateTime start = LocalDateTime.parse(startTime, datsFormatter);
+        LocalDateTime end = LocalDateTime.parse(endTime, datsFormatter);
+        if (start.isAfter(end)) {
             return ResponseEntity.badRequest().build();
         }
         List<Vote> votes = voteService.getVotesBetween(start, end);

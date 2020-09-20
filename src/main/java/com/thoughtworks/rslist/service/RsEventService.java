@@ -19,7 +19,7 @@ public class RsEventService {
     @Autowired
     RsEventRepository rsEventRepository;
 
-    public List<RsEvent> getAllRsEvent(){
+    public List<RsEvent> getAllRsEvent() {
         return rsEventRepository.findAll().stream()
                 .map(item ->
                         RsEvent.builder()
@@ -31,11 +31,11 @@ public class RsEventService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<RsEventEntity> getRsEventById(Integer rsEventId){
+    public Optional<RsEventEntity> getRsEventById(Integer rsEventId) {
         return rsEventRepository.findById(rsEventId);
     }
 
-    public void saveRsEvent(RsEvent rsEvent){
+    public void saveRsEvent(RsEvent rsEvent) {
         RsEventEntity rsEventEntity = RsEventEntity.builder()
                 .eventName(rsEvent.getEventName())
                 .keyWord(rsEvent.getKeyWord())
@@ -46,11 +46,11 @@ public class RsEventService {
         rsEventRepository.save(rsEventEntity);
     }
 
-    public void updateRsEvent(RsEventEntity rsEventEntity){
-            rsEventRepository.save(rsEventEntity);
+    public void updateRsEvent(RsEventEntity rsEventEntity) {
+        rsEventRepository.save(rsEventEntity);
     }
 
-    public void deleteById(int id){
+    public void deleteById(int id) {
         rsEventRepository.deleteById(id);
     }
 }

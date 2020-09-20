@@ -148,7 +148,7 @@ class VoteControllerTest {
         String endTime = "2020-09-19 10:14";
         String startTime = "2020-09-19 10:20";
         mockMvc.perform(get("/votes/time")
-                .param("startTime",startTime)
+                .param("startTime", startTime)
                 .param("endTime", endTime))
                 .andExpect(status().isBadRequest());
     }
@@ -159,7 +159,7 @@ class VoteControllerTest {
         String startTime = "2020-09-19 10:14";
         String endTime = "2020-09-19 10:20";
         mockMvc.perform(get("/votes/time")
-                .param("startTime",startTime)
+                .param("startTime", startTime)
                 .param("endTime", endTime))
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andExpect(jsonPath("$[0].voteTime", is("2020-09-19T10:15:00")));

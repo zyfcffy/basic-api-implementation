@@ -163,10 +163,10 @@ class RsControllerTest {
 
     @Test
     void should_delete_one_rs_event() throws Exception {
-        mockMvc.perform(delete("/rs/event/{deleteId}",rsEventEntity01.getId()))
+        mockMvc.perform(delete("/rs/event/{deleteId}", rsEventEntity01.getId()))
                 .andExpect(status().isNoContent());
         int rsEventSize = 1;
-        assertEquals(rsEventSize,rsEventRepository.findAll().size());
+        assertEquals(rsEventSize, rsEventRepository.findAll().size());
     }
 
     @Test

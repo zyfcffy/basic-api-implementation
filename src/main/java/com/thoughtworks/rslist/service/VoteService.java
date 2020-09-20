@@ -22,7 +22,7 @@ public class VoteService {
     @Autowired
     VoteRepository voteRepository;
 
-    public List<Vote> getVotes(int userId, int rsEventId, Pageable pageable){
+    public List<Vote> getVotes(int userId, int rsEventId, Pageable pageable) {
         List<VoteEntity> votes = voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId, pageable);
         return votes.stream().map(vote -> Vote.builder()
                 .userId(vote.getUserId())
@@ -32,7 +32,7 @@ public class VoteService {
                 .build()).collect(Collectors.toList());
     }
 
-    public void save(Vote vote,int rsEventId,int userId){
+    public void save(Vote vote, int rsEventId, int userId) {
         VoteEntity voteEntity =
                 VoteEntity.builder()
                         .voteTime(vote.getVoteTime())
@@ -43,8 +43,8 @@ public class VoteService {
         voteRepository.save(voteEntity);
     }
 
-    public List<Vote> getVotesBetween(LocalDateTime startTime, LocalDateTime endTime){
-        List<VoteEntity> votes = voteRepository.findAllByVoteTimeBetween(startTime,endTime);
+    public List<Vote> getVotesBetween(LocalDateTime startTime, LocalDateTime endTime) {
+        List<VoteEntity> votes = voteRepository.findAllByVoteTimeBetween(startTime, endTime);
         return votes.stream().map(vote -> Vote.builder()
                 .userId(vote.getUserId())
                 .rsEventId(vote.getRsEventId())

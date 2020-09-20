@@ -53,7 +53,7 @@ class UserControllerTest {
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         List<UserEntity> users = userRepository.findAll();
-        int index = users.size()-1;
+        int index = users.size() - 1;
         assertEquals("xiaowang", users.get(index).getUserName());
         assertEquals("female", users.get(index).getGender());
         assertEquals(19, users.get(index).getAge());
