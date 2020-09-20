@@ -11,6 +11,8 @@ import com.thoughtworks.rslist.exceptions.InvalidRsEventException;
 import com.thoughtworks.rslist.exceptions.RequestNotValidException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.service.RsEventService;
+import com.thoughtworks.rslist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -27,49 +29,29 @@ import java.util.stream.Collectors;
 
 @RestController
 public class RsController {
-    private final UserRepository userRepository;
-    private final RsEventRepository rsEventRepository;
+    @Autowired
+    RsEventService rsEventService;
 
-    public RsController(UserRepository userRepository, RsEventRepository rsEventRepository) {
-        this.rsEventRepository = rsEventRepository;
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    UserService  userService;
 
     @JsonView(RsEvent.CommonView.class)
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
                                                        @RequestParam(required = false) Integer end) {
-        List<RsEventEntity> rsEvents = rsEventRepository.findAll();
+        List<RsEvent> rsEvents = rsEventService.getAllRsEvent();
         if (start == null || end == null) {
-            return ResponseEntity.ok(
-                    rsEvents.stream()
-                            .map(item ->
-                                    RsEvent.builder()
-                                            .eventName(item.getEventName())
-                                            .keyWord(item.getKeyWord())
-                                            .voteNum(item.getVoteNum())
-                                            .userId(item.getUserEntity().getId())
-                                            .build())
-                            .collect(Collectors.toList()));
+            return ResponseEntity.ok(rsEvents);
         }
         if (start < 0 || start > rsEvents.size() || end < start || end > rsEvents.size()) {
             throw new IndexOutOfBoundsException("invalid request param");
         }
-        return ResponseEntity.ok(
-                rsEvents.stream()
-                        .map(item ->
-                                RsEvent.builder()
-                                        .eventName(item.getEventName())
-                                        .keyWord(item.getKeyWord())
-                                        .voteNum(item.getVoteNum())
-                                        .userId(item.getUserEntity().getId())
-                                        .build())
-                        .collect(Collectors.toList()).subList(start - 1, end));
+        return ResponseEntity.ok(rsEvents.subList(start - 1, end));
     }
 
     @GetMapping("rs/{id}")
     public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer id) throws RequestNotValidException {
-        Optional<RsEventEntity> result = rsEventRepository.findById(id);
+        Optional<RsEventEntity> result = rsEventService.getOneRsEventById(id);
         if (!result.isPresent()) {
             throw new RequestNotValidException("invalid id");
         }
@@ -91,17 +73,7 @@ public class RsController {
 
     @GetMapping("/rs/byIndex/{index}")
     public ResponseEntity<RsEvent> getRsEvent(@PathVariable int index) throws RequestNotValidException {
-        List<RsEvent> rsEvents =
-                rsEventRepository.findAll().stream()
-                        .map(
-                                item ->
-                                        RsEvent.builder()
-                                                .eventName(item.getEventName())
-                                                .keyWord(item.getKeyWord())
-                                                .userId(item.getId())
-                                                .voteNum(item.getVoteNum())
-                                                .build())
-                        .collect(Collectors.toList());
+        List<RsEvent> rsEvents = rsEventService.getAllRsEvent();
         if (index < 1 || index > rsEvents.size()) {
             throw new RequestNotValidException("invalid index");
         }
@@ -114,44 +86,28 @@ public class RsController {
         if (bindingResult.getAllErrors().size() != 0) {
             throw new InvalidRsEventException("invalid param");
         }
-        Optional<UserEntity> user = userRepository.findById(rsEvent.getUserId());
+        Optional<UserEntity> user = userService.getUserById(rsEvent.getUserId());
         if(!user.isPresent()){
             return ResponseEntity.badRequest().build();
         }
-        RsEventEntity rsEventEntity = RsEventEntity.builder()
-                .eventName(rsEvent.getEventName())
-                .keyWord(rsEvent.getKeyWord())
-                .userEntity(UserEntity.builder()
-                        .id(rsEvent.getUserId())
-                        .build())
-                .build();
-        rsEventRepository.save(rsEventEntity);
+        rsEventService.saveRsEvent(rsEvent);
         return ResponseEntity.created(null).build();
     }
 
     @PutMapping("/rs/event/{rsEventId}")
     public ResponseEntity<List<RsEvent>> editOneRsEvent(@PathVariable Integer rsEventId,
                                                         @RequestBody RsEvent rsEvent) {
-        RsEventEntity rsEventEntity = rsEventRepository.findById(rsEventId).get();
+        RsEventEntity rsEventEntity = rsEventService.getOneRsEventById(rsEventId).get();
         if (!rsEventEntity.getUserEntity().getId().equals(rsEvent.getUserId())) {
             return ResponseEntity.badRequest().build();
         }
-        if (rsEvent.getEventName() != null) {
-            rsEventEntity.setId(rsEventId);
-            rsEventEntity.setEventName(rsEvent.getEventName());
-            rsEventRepository.save(rsEventEntity);
-        }
-        if (rsEvent.getKeyWord() != null) {
-            rsEventEntity.setId(rsEventId);
-            rsEventEntity.setKeyWord(rsEvent.getKeyWord());
-            rsEventRepository.save(rsEventEntity);
-        }
+        rsEventService.updateRsEvent(rsEventEntity,rsEvent,rsEventId);
         return ResponseEntity.created(null).build();
     }
 
     @DeleteMapping("/rs/event/{deleteId}")
     private ResponseEntity<Object> deleteEvent(@PathVariable Integer deleteId) {
-        rsEventRepository.deleteById(deleteId);
+        rsEventService.deleteById(deleteId);
         return ResponseEntity.noContent().build();
     }
 
