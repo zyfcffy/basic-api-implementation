@@ -7,8 +7,11 @@ import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,8 +57,12 @@ public class VoteController {
     }
 
     @GetMapping("/votes")
-    public ResponseEntity<List<Vote>> getVotes(@RequestParam int userId, @RequestParam int rsEventId) {
-        List<VoteEntity> votes = voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId);
+    public ResponseEntity<List<Vote>> getVotes(@RequestParam int userId,
+                                               @RequestParam int rsEventId,
+                                               @RequestParam(defaultValue = "1") int pageIndex) {
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
+        List<VoteEntity> votes = voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId, pageable);
         return ResponseEntity.ok(votes.stream().map(vote -> Vote.builder()
                 .userId(vote.getUserId())
                 .rsEventId(vote.getRsEventId())
