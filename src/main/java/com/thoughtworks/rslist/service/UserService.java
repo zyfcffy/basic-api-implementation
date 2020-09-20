@@ -48,4 +48,8 @@ public class UserService {
     public void deleteUserById(Integer id){
         userRepository.deleteById(id);
     }
+
+    public void updateUser(UserEntity userEntity){
+        userRepository.save(userEntity);
+    }
 }

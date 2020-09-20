@@ -51,7 +51,7 @@ public class RsController {
 
     @GetMapping("rs/{id}")
     public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer id) throws RequestNotValidException {
-        Optional<RsEventEntity> result = rsEventService.getOneRsEventById(id);
+        Optional<RsEventEntity> result = rsEventService.getRsEventById(id);
         if (!result.isPresent()) {
             throw new RequestNotValidException("invalid id");
         }
@@ -97,11 +97,18 @@ public class RsController {
     @PutMapping("/rs/event/{rsEventId}")
     public ResponseEntity<List<RsEvent>> editOneRsEvent(@PathVariable Integer rsEventId,
                                                         @RequestBody RsEvent rsEvent) {
-        RsEventEntity rsEventEntity = rsEventService.getOneRsEventById(rsEventId).get();
+        RsEventEntity rsEventEntity = rsEventService.getRsEventById(rsEventId).get();
         if (!rsEventEntity.getUserEntity().getId().equals(rsEvent.getUserId())) {
             return ResponseEntity.badRequest().build();
         }
-        rsEventService.updateRsEvent(rsEventEntity,rsEvent,rsEventId);
+        if (rsEvent.getEventName() != null) {
+            rsEventEntity.setEventName(rsEvent.getEventName());
+            rsEventService.updateRsEvent(rsEventEntity);
+        }
+        if (rsEvent.getKeyWord() != null) {
+            rsEventEntity.setKeyWord(rsEvent.getKeyWord());
+            rsEventService.updateRsEvent(rsEventEntity);
+        }
         return ResponseEntity.created(null).build();
     }
 

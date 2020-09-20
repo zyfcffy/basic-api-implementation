@@ -31,7 +31,7 @@ public class RsEventService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<RsEventEntity> getOneRsEventById(Integer id){
+    public Optional<RsEventEntity> getRsEventById(Integer id){
         return rsEventRepository.findById(id);
     }
 
@@ -46,17 +46,8 @@ public class RsEventService {
         rsEventRepository.save(rsEventEntity);
     }
 
-    public void updateRsEvent(RsEventEntity rsEventEntity,RsEvent rsEvent,Integer rsEventId){
-        if (rsEvent.getEventName() != null) {
-            rsEventEntity.setId(rsEventId);
-            rsEventEntity.setEventName(rsEvent.getEventName());
+    public void updateRsEvent(RsEventEntity rsEventEntity){
             rsEventRepository.save(rsEventEntity);
-        }
-        if (rsEvent.getKeyWord() != null) {
-            rsEventEntity.setId(rsEventId);
-            rsEventEntity.setKeyWord(rsEvent.getKeyWord());
-            rsEventRepository.save(rsEventEntity);
-        }
     }
 
     public void deleteById(int id){

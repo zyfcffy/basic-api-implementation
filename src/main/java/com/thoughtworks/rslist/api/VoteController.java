@@ -7,6 +7,10 @@ import com.thoughtworks.rslist.entity.VoteEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import com.thoughtworks.rslist.service.RsEventService;
+import com.thoughtworks.rslist.service.UserService;
+import com.thoughtworks.rslist.service.VoteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,12 @@ import java.util.stream.Collectors;
 
 @RestController
 public class VoteController {
+    @Autowired
+    VoteService voteService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    RsEventService rsEventService;
     private final UserRepository userRepository;
     private final RsEventRepository rsEventRepository;
     private final VoteRepository voteRepository;
@@ -34,27 +44,20 @@ public class VoteController {
 
     @PostMapping("rs/vote/{rsEventId}")
     public ResponseEntity<Object> vote(@PathVariable Integer rsEventId, @RequestBody Vote vote) {
-        Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
-        Optional<UserEntity> userEntity = userRepository.findById(vote.getUserId());
+        Optional<RsEventEntity> rsEventEntity = rsEventService.getRsEventById(rsEventId);
+        Optional<UserEntity> userEntity = userService.getUserById(vote.getUserId());
         if (!rsEventEntity.isPresent()
                 || !userEntity.isPresent()
                 || vote.getVoteNum() > userEntity.get().getVoteNum()) {
             return ResponseEntity.badRequest().build();
         }
-        VoteEntity voteEntity =
-                VoteEntity.builder()
-                        .voteTime(vote.getVoteTime())
-                        .voteNum(vote.getVoteNum())
-                        .rsEventId(rsEventId)
-                        .userId(userEntity.get().getId())
-                        .build();
-        voteRepository.save(voteEntity);
+        voteService.save(vote,rsEventId,userEntity.get().getId());
         UserEntity user = userEntity.get();
         user.setVoteNum(user.getVoteNum() - vote.getVoteNum());
-        userRepository.save(user);
+        userService.updateUser(user);
         RsEventEntity rsEvent = rsEventEntity.get();
         rsEvent.setVoteNum(rsEvent.getVoteNum() + vote.getVoteNum());
-        rsEventRepository.save(rsEvent);
+        rsEventService.updateRsEvent(rsEvent);
         return ResponseEntity.created(null).build();
     }
 
@@ -64,13 +67,8 @@ public class VoteController {
                                                @RequestParam(defaultValue = "1") int pageIndex) {
         int pageSize = 5;
         Pageable pageable = PageRequest.of(pageIndex - 1, pageSize);
-        List<VoteEntity> votes = voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId, pageable);
-        return ResponseEntity.ok(votes.stream().map(vote -> Vote.builder()
-                .userId(vote.getUserId())
-                .rsEventId(vote.getRsEventId())
-                .voteNum(vote.getVoteNum())
-                .voteTime(vote.getVoteTime())
-                .build()).collect(Collectors.toList()));
+        List<Vote> votes = voteService.getVotes(userId, rsEventId, pageable);
+        return ResponseEntity.ok(votes);
     }
 
     @GetMapping("/votes/time")
@@ -82,12 +80,7 @@ public class VoteController {
         if(start.isAfter(end)){
             return ResponseEntity.badRequest().build();
         }
-        List<VoteEntity> votes = voteRepository.findAllByVoteTimeBetween(start,end);
-        return ResponseEntity.ok(votes.stream().map(vote -> Vote.builder()
-                .userId(vote.getUserId())
-                .rsEventId(vote.getRsEventId())
-                .voteNum(vote.getVoteNum())
-                .voteTime(vote.getVoteTime())
-                .build()).collect(Collectors.toList()));
+        List<Vote> votes = voteService.getVotesBetween(start, end);
+        return ResponseEntity.ok(votes);
     }
 }
