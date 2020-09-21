@@ -31,18 +31,8 @@ public class VoteController {
     UserService userService;
     @Autowired
     RsEventService rsEventService;
-    private final UserRepository userRepository;
-    private final RsEventRepository rsEventRepository;
-    private final VoteRepository voteRepository;
 
-
-    public VoteController(UserRepository userRepository, RsEventRepository rsEventRepository, VoteRepository voteRepository) {
-        this.userRepository = userRepository;
-        this.rsEventRepository = rsEventRepository;
-        this.voteRepository = voteRepository;
-    }
-
-    @PostMapping("rs/vote/{rsEventId}")
+    @PostMapping("/vote/{rsEventId}")
     public ResponseEntity<Object> vote(@PathVariable Integer rsEventId, @RequestBody Vote vote) {
         Optional<RsEventEntity> rsEventEntity = rsEventService.getRsEventById(rsEventId);
         Optional<UserEntity> userEntity = userService.getUserById(vote.getUserId());

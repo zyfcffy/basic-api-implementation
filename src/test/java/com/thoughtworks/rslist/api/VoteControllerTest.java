@@ -84,7 +84,7 @@ class VoteControllerTest {
         Vote vote = new Vote(rsEventEntity.getId(), userEntity.getId(), null, voteNum);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
-        mockMvc.perform(post("/rs/vote/{rsEventId}", rsEventEntity.getId())
+        mockMvc.perform(post("/vote/{rsEventId}", rsEventEntity.getId())
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         List<VoteEntity> votes = voteRepository.findAll();
@@ -98,7 +98,7 @@ class VoteControllerTest {
         Vote vote = new Vote(rsEventEntity.getId(), rsEventEntity.getId(), null, 20);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
-        mockMvc.perform(post("/rs/vote/{rsEventId}", rsEventEntity.getId())
+        mockMvc.perform(post("/vote/{rsEventId}", rsEventEntity.getId())
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -108,7 +108,7 @@ class VoteControllerTest {
         Vote vote = new Vote(rsEventEntity.getId(), 10, null, 5);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
-        mockMvc.perform(post("/rs/vote/{rsEventId}", rsEventEntity.getId())
+        mockMvc.perform(post("/vote/{rsEventId}", rsEventEntity.getId())
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -118,7 +118,7 @@ class VoteControllerTest {
         Vote vote = new Vote(10, rsEventEntity.getId(), null, 5);
         ObjectMapper objectMapper = new ObjectMapper();
         String json = objectMapper.writeValueAsString(vote);
-        mockMvc.perform(post("/rs/vote/{rsEventId}", 10)
+        mockMvc.perform(post("/vote/{rsEventId}", 10)
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
