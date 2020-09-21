@@ -49,7 +49,7 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", 19, "a@thoughtworks.com", "18888888888");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         List<UserEntity> users = userRepository.findAll();
@@ -66,7 +66,7 @@ class UserControllerTest {
         User user = new User("", "female", 20, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
@@ -77,7 +77,7 @@ class UserControllerTest {
         User user = new User("123456789", "female", 20, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
@@ -88,7 +88,7 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", null, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
@@ -99,7 +99,7 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", 101, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
@@ -110,7 +110,7 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", 1, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
@@ -121,7 +121,7 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", 20, "1", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
@@ -132,7 +132,7 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", 20, "a@thoughtworks.com", "");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -142,7 +142,7 @@ class UserControllerTest {
         User user = new User("xiaowang", "female", 20, "a@thoughtworks.com", "155");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -171,7 +171,7 @@ class UserControllerTest {
         User user = new User("", "female", 20, "a@twu.com", "15525557689");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
-        mockMvc.perform(post("/user/register")
+        mockMvc.perform(post("/user")
                 .content(userJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid user")));
@@ -187,7 +187,7 @@ class UserControllerTest {
                 .phone("15527765431")
                 .build();
         userRepository.save(userEntity);
-        mockMvc.perform(get("/user/{id}", userEntity.getId()))
+        mockMvc.perform(get("/users/{id}", userEntity.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(userEntity.getId())))
                 .andExpect(jsonPath("$.userName", is("user01")))
@@ -207,7 +207,7 @@ class UserControllerTest {
                 .voteNum(10)
                 .build();
         userRepository.save(userEntity);
-        mockMvc.perform(delete("/user/{id}", userEntity.getId()))
+        mockMvc.perform(delete("/users/{id}", userEntity.getId()))
                 .andExpect(status().isNoContent());
         List<UserEntity> userEntities = userRepository.findAll();
         assertEquals(0, userEntities.size());
@@ -230,7 +230,7 @@ class UserControllerTest {
                 .userEntity(userEntity)
                 .build();
         rsEventRepository.save(rsEventEntity);
-        mockMvc.perform(delete("/user/{id}", userEntity.getId()))
+        mockMvc.perform(delete("/users/{id}", userEntity.getId()))
                 .andExpect(status().isNoContent());
         List<UserEntity> userEntities = userRepository.findAll();
         List<RsEventEntity> rsEventEntities = rsEventRepository.findAll();

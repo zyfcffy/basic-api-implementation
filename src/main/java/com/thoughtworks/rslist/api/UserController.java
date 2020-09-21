@@ -21,7 +21,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/user/register")
+    @PostMapping("/user")
     public ResponseEntity<Object> register(@Valid @RequestBody User user, BindingResult bindingResult) throws InvalidUserException {
         if (bindingResult.getAllErrors().size() != 0) {
             throw new InvalidUserException("invalid user");
@@ -36,13 +36,13 @@ public class UserController {
         return ResponseEntity.ok().body(users);
     }
 
-    @GetMapping("user/{id}")
+    @GetMapping("users/{id}")
     public ResponseEntity<UserEntity> getUserById(@PathVariable Integer id) {
         Optional<UserEntity> userOptional = userService.getUserById(id);
         return ResponseEntity.ok(userOptional.get());
     }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<Object> deleteUserById(@PathVariable Integer id) {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
