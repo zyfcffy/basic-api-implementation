@@ -33,7 +33,7 @@ public class RsController {
     UserService userService;
 
     @JsonView(RsEvent.CommonView.class)
-    @GetMapping("/rs/events")
+    @GetMapping("/rsEvents")
     public ResponseEntity<List<RsEvent>> getAllRsEvent(@RequestParam(required = false) Integer start,
                                                        @RequestParam(required = false) Integer end) {
         List<RsEvent> rsEvents = rsEventService.getAllRsEvent();
@@ -46,7 +46,7 @@ public class RsController {
         return ResponseEntity.ok(rsEvents.subList(start - 1, end));
     }
 
-    @GetMapping("rs/event/{rsEventId}")
+    @GetMapping("/rsEvent/{rsEventId}")
     public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer rsEventId) throws RequestNotValidException {
         Optional<RsEventEntity> result = rsEventService.getRsEventById(rsEventId);
         if (!result.isPresent()) {
@@ -68,7 +68,7 @@ public class RsController {
                 .build());
     }
 
-    @GetMapping("/rs/byIndex/{index}")
+    @GetMapping("/rsEvent/byIndex/{index}")
     public ResponseEntity<RsEvent> getRsEvent(@PathVariable int index) throws RequestNotValidException {
         List<RsEvent> rsEvents = rsEventService.getAllRsEvent();
         if (index < 1 || index > rsEvents.size()) {
@@ -77,7 +77,7 @@ public class RsController {
         return ResponseEntity.ok(rsEvents.get(index - 1));
     }
 
-    @PostMapping("/rs/event")
+    @PostMapping("/rsEvent")
     public ResponseEntity<Object> addRsEvent(@Valid @RequestBody RsEvent rsEvent,
                                              BindingResult bindingResult) throws InvalidRsEventException {
         if (bindingResult.getAllErrors().size() != 0) {
@@ -91,7 +91,7 @@ public class RsController {
         return ResponseEntity.created(null).build();
     }
 
-    @PutMapping("/rs/event/{rsEventId}")
+    @PutMapping("/rsEvent/{rsEventId}")
     public ResponseEntity<Object> editOneRsEvent(@PathVariable Integer rsEventId,
                                                  @RequestBody RsEvent rsEvent) {
         RsEventEntity rsEventEntity = rsEventService.getRsEventById(rsEventId).get();
@@ -111,7 +111,7 @@ public class RsController {
         return ResponseEntity.created(null).build();
     }
 
-    @DeleteMapping("/rs/event/{deleteId}")
+    @DeleteMapping("/rsEvent/{deleteId}")
     private ResponseEntity<Object> deleteEvent(@PathVariable Integer deleteId) {
         rsEventService.deleteById(deleteId);
         return ResponseEntity.noContent().build();
