@@ -46,7 +46,7 @@ public class RsController {
         return ResponseEntity.ok(rsEvents.subList(start - 1, end));
     }
 
-    @GetMapping("/rsEvent/{rsEventId}")
+    @GetMapping("/rsEvents/{rsEventId}")
     public ResponseEntity<RsEvent> getOneRsEventById(@PathVariable Integer rsEventId) throws RequestNotValidException {
         Optional<RsEventEntity> result = rsEventService.getRsEventById(rsEventId);
         if (!result.isPresent()) {
@@ -68,7 +68,7 @@ public class RsController {
                 .build());
     }
 
-    @GetMapping("/rsEvent/byIndex/{index}")
+    @GetMapping("/rsEvents/byIndex/{index}")
     public ResponseEntity<RsEvent> getRsEvent(@PathVariable int index) throws RequestNotValidException {
         List<RsEvent> rsEvents = rsEventService.getAllRsEvent();
         if (index < 1 || index > rsEvents.size()) {
@@ -91,7 +91,7 @@ public class RsController {
         return ResponseEntity.created(null).build();
     }
 
-    @PutMapping("/rsEvent/{rsEventId}")
+    @PutMapping("/rsEvents/{rsEventId}")
     public ResponseEntity<Object> editOneRsEvent(@PathVariable Integer rsEventId,
                                                  @RequestBody RsEvent rsEvent) {
         RsEventEntity rsEventEntity = rsEventService.getRsEventById(rsEventId).get();
@@ -111,7 +111,7 @@ public class RsController {
         return ResponseEntity.created(null).build();
     }
 
-    @DeleteMapping("/rsEvent/{deleteId}")
+    @DeleteMapping("/rsEvents/{deleteId}")
     private ResponseEntity<Object> deleteEvent(@PathVariable Integer deleteId) {
         rsEventService.deleteById(deleteId);
         return ResponseEntity.noContent().build();

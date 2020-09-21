@@ -101,7 +101,7 @@ class RsControllerTest {
 
     @Test
     void should_get_one_event_by_id() throws Exception {
-        mockMvc.perform(get("/rsEvent/{rsEventId}", rsEventEntity01.getId()))
+        mockMvc.perform(get("/rsEvents/{rsEventId}", rsEventEntity01.getId()))
                 .andExpect(jsonPath("$.eventName", is("eventName1")))
                 .andExpect(jsonPath("$.keyWord", is("keyWord1")))
                 .andExpect(jsonPath("$.userId", is(userEntity.getId())))
@@ -153,7 +153,7 @@ class RsControllerTest {
     @Test
     void should_edit_one_rs_event_when_userId_equals_reEvent_userId() throws Exception {
         String json = "{\"eventName\":\"猪肉涨价了\",\"keyWord\":\"经济\",\"userId\":" + userEntity.getId() + "}";
-        mockMvc.perform(put("/rsEvent/{rsEventId}", rsEventEntity01.getId())
+        mockMvc.perform(put("/rsEvents/{rsEventId}", rsEventEntity01.getId())
                 .content(json).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
         List<RsEventEntity> rsEvents = rsEventRepository.findAll();
@@ -163,7 +163,7 @@ class RsControllerTest {
 
     @Test
     void should_delete_one_rs_event() throws Exception {
-        mockMvc.perform(delete("/rsEvent/{deleteId}", rsEventEntity01.getId()))
+        mockMvc.perform(delete("/rsEvents/{deleteId}", rsEventEntity01.getId()))
                 .andExpect(status().isNoContent());
         int rsEventSize = 1;
         assertEquals(rsEventSize, rsEventRepository.findAll().size());
@@ -178,7 +178,7 @@ class RsControllerTest {
 
     @Test
     void should_return_400_and_error_message_when_InvalidIndexException() throws Exception {
-        mockMvc.perform(get("/rsEvent/byIndex/40"))
+        mockMvc.perform(get("/rsEvents/byIndex/40"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", is("invalid index")));
     }
