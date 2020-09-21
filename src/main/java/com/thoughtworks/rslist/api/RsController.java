@@ -26,11 +26,13 @@ import java.util.stream.Collectors;
 
 @RestController
 public class RsController {
-    @Autowired
-    RsEventService rsEventService;
+    private final RsEventService rsEventService;
+    private final UserService userService;
 
-    @Autowired
-    UserService userService;
+    public RsController(RsEventService rsEventService, UserService userService) {
+        this.rsEventService = rsEventService;
+        this.userService = userService;
+    }
 
     @JsonView(RsEvent.CommonView.class)
     @GetMapping("/rs/events")

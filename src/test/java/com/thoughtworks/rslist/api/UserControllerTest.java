@@ -29,14 +29,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
-    @Autowired
-    MockMvc mockMvc;
+    private final MockMvc mockMvc;
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RsEventRepository rsEventRepository;
+    public UserControllerTest(MockMvc mockMvc, UserRepository userRepository, RsEventRepository rsEventRepository) {
+        this.mockMvc = mockMvc;
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+    }
 
     @BeforeEach
     void setUp() {

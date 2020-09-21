@@ -28,12 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class RsControllerTest {
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
+    private final MockMvc mockMvc;
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
+
+    public RsControllerTest(MockMvc mockMvc, UserRepository userRepository, RsEventRepository rsEventRepository) {
+        this.mockMvc = mockMvc;
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+    }
 
     UserEntity userEntity;
     RsEventEntity rsEventEntity01;

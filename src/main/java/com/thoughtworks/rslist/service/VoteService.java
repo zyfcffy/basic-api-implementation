@@ -15,12 +15,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class VoteService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
-    @Autowired
-    VoteRepository voteRepository;
+    private final VoteRepository voteRepository;
+
+    public VoteService(VoteRepository voteRepository) {
+        this.voteRepository = voteRepository;
+    }
 
     public List<Vote> getVotes(int userId, int rsEventId, Pageable pageable) {
         List<VoteEntity> votes = voteRepository.findAllByUserIdAndRsEventId(userId, rsEventId, pageable);

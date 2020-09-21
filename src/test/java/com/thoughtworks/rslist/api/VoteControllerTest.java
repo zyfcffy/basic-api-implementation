@@ -22,8 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,14 +33,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class VoteControllerTest {
-    @Autowired
-    MockMvc mockMvc;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
-    @Autowired
-    VoteRepository voteRepository;
+    public final MockMvc mockMvc;
+    public final UserRepository userRepository;
+    public final RsEventRepository rsEventRepository;
+    public final VoteRepository voteRepository;
+
+    public VoteControllerTest(MockMvc mockMvc, UserRepository userRepository, RsEventRepository rsEventRepository, VoteRepository voteRepository) {
+        this.mockMvc = mockMvc;
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+        this.voteRepository = voteRepository;
+    }
 
     UserEntity userEntity;
     RsEventEntity rsEventEntity;

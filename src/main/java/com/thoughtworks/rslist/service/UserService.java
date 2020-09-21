@@ -13,10 +13,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<User> getUsers() {
         List<UserEntity> users = userRepository.findAll();

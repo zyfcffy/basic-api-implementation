@@ -14,10 +14,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class RsEventService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
+    private final RsEventRepository rsEventRepository;
+
+    public RsEventService(RsEventRepository rsEventRepository) {
+        this.rsEventRepository = rsEventRepository;
+    }
 
     public List<RsEvent> getAllRsEvent() {
         return rsEventRepository.findAll().stream()
